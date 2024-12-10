@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
 const User = require('../models/userModel');
 
 // Get all users
@@ -32,24 +31,17 @@ const getUser = async (req, res) => {
 };
 
 // Create a new user
-const createUser = async (req, res) => {
+// Create a new user
+const signupUser = async (req, res) => {
     const { fullName, bloodGroup, location, email, phoneNumber, password } = req.body;
-
     try {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const user = await User.create({
-            fullName,
-            bloodGroup,
-            location,
-            email,
-            phoneNumber,
-            password: hashedPassword,
-        });
-        res.status(201).json(user);
+        const user = await User.signup(fullName, bloodGroup, location, email, phoneNumber, password);
+        res.status(201).json(user); 
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        res.status(400).json({ error: error.message }); 
     }
 };
+
 
 // Delete a user
 const deleteUser = async (req, res) => {
@@ -90,4 +82,10 @@ const updateUser = async (req, res) => {
     }
 };
 
-module.exports = { getUser, getUsers, createUser, deleteUser, updateUser };
+//login user
+const loginUser = async (req, res) => {
+    res.json({message: "User logged in successfully"})
+};
+
+
+module.exports = { getUser, getUsers, signupUser, deleteUser, updateUser, loginUser  };
