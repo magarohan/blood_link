@@ -1,5 +1,14 @@
 const mongoose = require('mongoose');
 const User = require('../models/userModel');
+const jwt = require('jsonwebtoken');
+
+// Helper function to create a token
+const createToken = (_id) => {
+    if (!process.env.SECRET) {
+        throw new Error('JWT secret is not defined');
+    }
+    return jwt.sign({ _id }, process.env.SECRET, { expiresIn: '3d' });
+};
 
 // Get all users
 const getUsers = async (req, res) => {
@@ -30,18 +39,37 @@ const getUser = async (req, res) => {
     }
 };
 
-// Create a new user
-// Create a new user
+// Signup user
 const signupUser = async (req, res) => {
     const { fullName, bloodGroup, location, email, phoneNumber, password } = req.body;
+
     try {
         const user = await User.signup(fullName, bloodGroup, location, email, phoneNumber, password);
-        res.status(201).json(user); 
+
+        // Create token
+        const token = createToken(user._id);
+
+        res.status(201).json({ user, token });
     } catch (error) {
-        res.status(400).json({ error: error.message }); 
+        res.status(400).json({ error: error.message });
     }
 };
 
+// Login user
+const loginUser = async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const user = await User.login(email, password);
+
+        // Create token
+        const token = createToken(user._id);
+
+        res.status(200).json({ user, token });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
 
 // Delete a user
 const deleteUser = async (req, res) => {
@@ -82,10 +110,4 @@ const updateUser = async (req, res) => {
     }
 };
 
-//login user
-const loginUser = async (req, res) => {
-    res.json({message: "User logged in successfully"})
-};
-
-
-module.exports = { getUser, getUsers, signupUser, deleteUser, updateUser, loginUser  };
+module.exports = { getUser, getUsers, signupUser, deleteUser, updateUser, loginUser };
