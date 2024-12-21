@@ -125,12 +125,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   const Text("Don't have an account? "),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const RegisterScreen(),
-                        ),
-                      );
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context)=> AlertDialog(
+                            title: const Text('Login Sucessful'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, 'OK'),
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          ));
+                      //to navigate to home screen uncomment when homescreen is made
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => const HomeScreen(),
+                      //   ),
+                      // );
                     },
                     child: const Text(
                       'Register Now.',
