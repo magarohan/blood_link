@@ -1,57 +1,86 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'home.dart';
 import 'signup.dart';
+import 'package:http/http.dart'
+    as http;
+import 'dart:convert';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class LoginScreen
+    extends StatefulWidget {
+  const LoginScreen(
+      {super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() =>
+      _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+class _LoginScreenState
+    extends State<LoginScreen> {
+  final TextEditingController
+      _emailController =
+      TextEditingController();
+  final TextEditingController
+      _passwordController =
+      TextEditingController();
+  bool
+      _isLoading =
+      false;
 
-  Future<void> _login() async {
-    // Log email and password inputs in the terminal
-    print('Email: ${_emailController.text}');
-    print('Password: ${_passwordController.text}');
+  Future<void>
+      _login() async {
+    final email =
+        _emailController.text.trim();
+    final password =
+        _passwordController.text.trim();
 
-    final url = Uri.parse('http://10.0.2.2:4000/api/users/login');
-    final body = {
-      'email': _emailController.text,
-      'password': _passwordController.text,
-    };
+    if (email.isEmpty ||
+        password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Email and Password are required')),
+      );
+      return;
+    }
 
+    setState(() {
+      _isLoading = true;
+    });
+
+    // Send the login request to the backend
+    final url =
+        Uri.parse('http://10.0.2.2:4000/api/users/login');
     try {
       final response = await http.post(
         url,
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: json.encode(body),
+        body: json.encode({
+          'email': email,
+          'password': password
+        }),
       );
 
-      print('Response Status Code: ${response.statusCode}');
-      print('Response Body: ${response.body}');
+      setState(() {
+        _isLoading = false;
+      });
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final data = json.decode(response.body);
-        final token = data['token'];
+      if (response.statusCode == 200) {
+        // If login is successful, parse the response and navigate to home screen
+        final responseData = json.decode(response.body);
+        final token = responseData['token']; // You can store this token if needed
 
-        await _secureStorage.write(key: 'auth_token', value: token);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Login Successful!')),
         );
+
+        // Navigate to the home screen
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const RegisterScreen()),
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
       } else {
+        // If login fails, show an error message
         final errorData = json.decode(response.body);
         final errorMessage = errorData['error'] ?? 'Login Failed. Try Again!';
         ScaffoldMessenger.of(context).showSnackBar(
@@ -59,7 +88,10 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } catch (error) {
-      print('Error during login: $error');
+      // Handle any network or unexpected errors
+      setState(() {
+        _isLoading = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('An error occurred. Please try again later.')),
       );
@@ -67,101 +99,53 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget
+      build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 80),
-              Center(
-                child: Column(
-                  children: [
-                    Image.asset(
-                      'assets/blood_drop.png',
-                      height: 120,
-                    ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      'Blood Link',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
-                      ),
-                    ),
-                  ],
-                ),
+              Image.asset('assets/blood_drop.png', height: 120),
+              const SizedBox(height: 10),
+              const Text(
+                'Blood Link',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.red),
               ),
               const SizedBox(height: 40),
-              _buildTextField(_emailController, 'Email'),
-              const SizedBox(height: 20),
-              _buildTextField(_passwordController, 'Password', obscureText: true),
-              const SizedBox(height: 30),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  onPressed: _login,
-                  child: const Text(
-                    'Login',
-                    style: TextStyle(fontSize: 16, color: Colors.white),
-                  ),
-                ),
+              TextField(
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'Email'),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Password'),
               ),
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text("Don't have an account? "),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const RegisterScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      'Register Now.',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                      ),
+              _isLoading
+                  ? const CircularProgressIndicator()
+                  : ElevatedButton(
+                      onPressed: _login,
+                      child: const Text('Login'),
                     ),
-                  ),
-                ],
+              const SizedBox(height: 10),
+              TextButton(
+                onPressed: () {
+                  // Navigate to RegisterScreen if the user doesn't have an account
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                  );
+                },
+                child: const Text('Register Now'),
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField(TextEditingController controller, String hintText, {bool obscureText = false}) {
-    return TextField(
-      controller: controller,
-      obscureText: obscureText,
-      decoration: InputDecoration(
-        hintText: hintText,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.red),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.red, width: 2),
         ),
       ),
     );

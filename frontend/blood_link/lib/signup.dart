@@ -1,59 +1,94 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart'
+    as http;
 import 'dart:convert';
 import 'login.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class RegisterScreen
+    extends StatefulWidget {
+  const RegisterScreen(
+      {super.key});
 
   @override
-  _RegisterScreenState createState() => _RegisterScreenState();
+  _RegisterScreenState createState() =>
+      _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
-  final _fullNameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _bloodGroupController = TextEditingController();
-  final _locationController = TextEditingController();
+class _RegisterScreenState
+    extends State<RegisterScreen> {
+  final _fullNameController =
+      TextEditingController();
+  final _emailController =
+      TextEditingController();
+  final _passwordController =
+      TextEditingController();
+  final _phoneController =
+      TextEditingController();
+  final _bloodGroupController =
+      TextEditingController();
+  final _locationController =
+      TextEditingController();
 
-  Future<void> _register() async {
-    // Log all the user inputs in the terminal
-    print('Full Name: ${_fullNameController.text}');
-    print('Email: ${_emailController.text}');
-    print('Password: ${_passwordController.text}');
-    print('Phone Number: ${_phoneController.text}');
-    print('Blood Group: ${_bloodGroupController.text}');
-    print('Location: ${_locationController.text}');
+  Future<void>
+      _register() async {
+    final fullName =
+        _fullNameController.text.trim();
+    final email =
+        _emailController.text.trim();
+    final password =
+        _passwordController.text.trim();
+    final phoneNumber =
+        _phoneController.text.trim();
+    final bloodGroup =
+        _bloodGroupController.text.trim();
+    final location =
+        _locationController.text.trim();
 
-    final url = Uri.parse('http://10.0.2.2:4000/api/users/signup');
+    if (fullName.isEmpty ||
+        email.isEmpty ||
+        password.isEmpty ||
+        phoneNumber.isEmpty ||
+        bloodGroup.isEmpty ||
+        location.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('All fields are required')),
+      );
+      return;
+    }
 
+    setState(() {
+      _isLoading = true;
+    });
+
+    // Send the registration request to the backend
+    final url =
+        Uri.parse('http://10.0.2.2:4000/api/users/signup');
     try {
       final response = await http.post(
         url,
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: json.encode({
-          'fullName': _fullNameController.text,
-          'email': _emailController.text,
-          'password': _passwordController.text,
-          'phoneNumber': _phoneController.text,
-          'bloodGroup': _bloodGroupController.text,
-          'location': _locationController.text,
+          'fullName': fullName,
+          'email': email,
+          'password': password,
+          'phoneNumber': phoneNumber,
+          'bloodGroup': bloodGroup,
+          'location': location,
         }),
       );
 
-      // Log the response for debugging
-      print('Response Status Code: ${response.statusCode}');
-      print('Response Body: ${response.body}');
+      setState(() {
+        _isLoading = false;
+      });
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Successful registration
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Registration Successful!')),
         );
+        // Navigate to the login screen after successful registration
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const LoginScreen()),
@@ -68,15 +103,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
       }
     } catch (error) {
       // Handle network or unexpected errors
-      print('Error: $error');
+      setState(() {
+        _isLoading = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('An error occurred. Please try again later.')),
       );
     }
   }
 
+  bool
+      _isLoading =
+      false;
+
   @override
-  Widget build(BuildContext context) {
+  Widget
+      build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -129,10 +171,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   onPressed: _register,
-                  child: const Text(
-                    'Register',
-                    style: TextStyle(fontSize: 16, color: Colors.white),
-                  ),
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text(
+                          'Register',
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -166,7 +210,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hintText, {bool obscureText = false}) {
+  Widget _buildTextField(
+      TextEditingController controller,
+      String hintText,
+      {bool obscureText = false}) {
     return TextField(
       controller: controller,
       obscureText: obscureText,
