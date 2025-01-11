@@ -4,18 +4,18 @@ import 'package:http/http.dart'
 import 'dart:convert';
 import 'login.dart';
 
-class RegisterScreen
+class SignupScreen
     extends StatefulWidget {
-  const RegisterScreen(
+  const SignupScreen(
       {super.key});
 
   @override
-  _RegisterScreenState createState() =>
-      _RegisterScreenState();
+  _SignupScreenState createState() =>
+      _SignupScreenState();
 }
 
-class _RegisterScreenState
-    extends State<RegisterScreen> {
+class _SignupScreenState
+    extends State<SignupScreen> {
   final _fullNameController =
       TextEditingController();
   final _emailController =
@@ -60,14 +60,13 @@ class _RegisterScreenState
       _isLoading = true;
     });
 
-    // Send the registration request to the backend
     final url =
         Uri.parse('http://10.0.2.2:4000/api/users/signup');
     try {
       final response = await http.post(
         url,
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: json.encode({
           'fullName': fullName,
@@ -84,17 +83,14 @@ class _RegisterScreenState
       });
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // Successful registration
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Registration Successful!')),
         );
-        // Navigate to the login screen after successful registration
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const LoginScreen()),
         );
       } else {
-        // Handle errors from the server
         final errorData = json.decode(response.body);
         final errorMessage = errorData['error'] ?? 'Registration Failed. Try Again!';
         ScaffoldMessenger.of(context).showSnackBar(
@@ -102,7 +98,6 @@ class _RegisterScreenState
         );
       }
     } catch (error) {
-      // Handle network or unexpected errors
       setState(() {
         _isLoading = false;
       });
@@ -121,13 +116,23 @@ class _RegisterScreenState
       build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('Sign Up'),
+        backgroundColor: Colors.red,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 80),
+              const SizedBox(height: 40),
               Center(
                 child: Column(
                   children: [

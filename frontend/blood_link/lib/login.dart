@@ -4,6 +4,7 @@ import 'signup.dart';
 import 'package:http/http.dart'
     as http;
 import 'dart:convert';
+import 'adminHome.dart';
 
 class LoginScreen
     extends StatefulWidget {
@@ -40,6 +41,13 @@ class _LoginScreenState
         const SnackBar(content: Text('Email and Password are required')),
       );
       return;
+    }
+    if (email == "admin" &&
+        password == "admin") {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const AdminHome()),
+      );
     }
 
     setState(() {
@@ -139,7 +147,7 @@ class _LoginScreenState
                   // Navigate to RegisterScreen if the user doesn't have an account
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                    MaterialPageRoute(builder: (context) => const SignupScreen()),
                   );
                 },
                 child: const Text('Register Now'),
