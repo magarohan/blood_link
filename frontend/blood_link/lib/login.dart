@@ -5,6 +5,7 @@ import 'package:http/http.dart'
     as http;
 import 'dart:convert';
 import 'adminHome.dart';
+import 'bloodBank.dart';
 
 class LoginScreen
     extends StatefulWidget {
@@ -42,12 +43,24 @@ class _LoginScreenState
       );
       return;
     }
+
+    // Hardcoded admin and blood bank login for testing
     if (email == "admin" &&
         password == "admin") {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const AdminHome()),
       );
+      return;
+    }
+
+    if (email == "bloodbank" &&
+        password == "bloodbank") {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const BloodBank()),
+      );
+      return;
     }
 
     setState(() {
@@ -61,11 +74,11 @@ class _LoginScreenState
       final response = await http.post(
         url,
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: json.encode({
           'email': email,
-          'password': password
+          'password': password,
         }),
       );
 
@@ -74,9 +87,8 @@ class _LoginScreenState
       });
 
       if (response.statusCode == 200) {
-        // If login is successful, parse the response and navigate to home screen
+        // If login is successful, parse the response
         final responseData = json.decode(response.body);
-        final token = responseData['token']; // You can store this token if needed
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Login Successful!')),
@@ -139,7 +151,13 @@ class _LoginScreenState
                   ? const CircularProgressIndicator()
                   : ElevatedButton(
                       onPressed: _login,
-                      child: const Text('Login'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                      child: const Text(
+                        'Login',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
               const SizedBox(height: 10),
               TextButton(
