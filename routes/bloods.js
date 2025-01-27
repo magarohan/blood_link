@@ -1,5 +1,4 @@
 const express = require('express');
-const Blood = require('../models/bloodModel');
 const {
     getAllBlood,
     getBloodById,

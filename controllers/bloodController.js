@@ -87,7 +87,7 @@ const deleteBlood = async (req, res) => {
 
 // Search blood by type and Rh factor
 const searchBlood = async (req, res) => {
-    const { bloodType, rhFactor } = req.params;
+    const { bloodType, rhFactor } = req.query; // Use req.query instead of req.params
 
     try {
         const bloodRecords = await Blood.find({ bloodType, rhFactor });

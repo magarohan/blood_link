@@ -20,7 +20,7 @@ const bloodSchema = new mongoose.Schema({
       type: Number,
       default: 0, // Units of RBCs available
     },
-    whiteBloodCells:{
+    whiteBloodCells: {
       type: Number,
       default: 0, // Units of WBCs available
     },
