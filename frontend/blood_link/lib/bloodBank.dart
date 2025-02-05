@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart'
+    as http;
+import 'dart:convert';
 import 'updateBloodInventory.dart'; // Ensure this import is correct
 
 class BloodBank
@@ -13,65 +16,56 @@ class BloodBank
 
 class _BloodBankState
     extends State<BloodBank> {
-  // Example blood inventory data
   List<Map<String, dynamic>>
       bloodInventory =
-      [
-    {
-      'type': 'A+',
-      'wholeBlood': '10 Pints',
-      'rbc': '1000 ml',
-      'wbc': '1000 ml',
-      'platelets': '1000 ml',
-      'plasma': '1000 ml',
-      'cryo': '1000 ml',
-    },
-    {
-      'type': 'A-',
-      'wholeBlood': '8 Pints',
-      'rbc': '900 ml',
-      'wbc': '800 ml',
-      'platelets': '750 ml',
-      'plasma': '850 ml',
-      'cryo': '800 ml',
-    },
-    {
-      'type': 'B+',
-      'wholeBlood': '12 Pints',
-      'rbc': '1100 ml',
-      'wbc': '1000 ml',
-      'platelets': '1050 ml',
-      'plasma': '950 ml',
-      'cryo': '1000 ml',
-    },
-    {
-      'type': 'B-',
-      'wholeBlood': '6 Pints',
-      'rbc': '800 ml',
-      'wbc': '700 ml',
-      'platelets': '700 ml',
-      'plasma': '800 ml',
-      'cryo': '750 ml',
-    },
-    {
-      'type': 'AB+',
-      'wholeBlood': '5 Pints',
-      'rbc': '950 ml',
-      'wbc': '850 ml',
-      'platelets': '900 ml',
-      'plasma': '900 ml',
-      'cryo': '850 ml',
-    },
-    {
-      'type': 'AB-',
-      'wholeBlood': '4 Pints',
-      'rbc': '700 ml',
-      'wbc': '600 ml',
-      'platelets': '650 ml',
-      'plasma': '750 ml',
-      'cryo': '700 ml',
-    },
-  ];
+      []; // Initialize as empty list
+  bool
+      isLoading =
+      true; // For loading indicator
+
+  @override
+  void
+      initState() {
+    super.initState();
+    fetchBloodInventory();
+  }
+
+  // Fetch blood inventory from the backend
+  Future<void>
+      fetchBloodInventory() async {
+    const String
+        url =
+        'http://localhost:4000/api/bloods/'; // Change to your backend URL
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        setState(() {
+          bloodInventory = data.map((item) {
+            return {
+              'type': '${item['bloodType']}${item['rhFactor']}', // Concatenate bloodType and rhFactor
+              'wholeBlood': '${item['components']['wholeBlood']} Pints',
+              'rbc': '${item['components']['redBloodCells']} ml',
+              'wbc': '${item['components']['whiteBloodCells']} ml',
+              'platelets': '${item['components']['platelets']} ml',
+              'plasma': '${item['components']['plasma']} ml',
+              'cryo': '${item['components']['cryoprecipitate']} ml',
+            };
+          }).toList();
+          isLoading = false;
+        });
+      } else {
+        throw Exception('Failed to load blood inventory');
+      }
+    } catch (error) {
+      print('Error fetching blood inventory: $error');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget
@@ -105,21 +99,25 @@ class _BloodBankState
             ],
           ),
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.75,
-                  crossAxisSpacing: 16.0,
-                  mainAxisSpacing: 16.0,
-                ),
-                itemCount: bloodInventory.length,
-                itemBuilder: (context, index) {
-                  return _buildInventoryCard(bloodInventory[index], index);
-                },
-              ),
-            ),
+            child: isLoading
+                ? const Center(child: CircularProgressIndicator()) // Show loading indicator
+                : bloodInventory.isEmpty
+                    ? const Center(child: Text('No blood inventory available'))
+                    : Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: GridView.builder(
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.75,
+                            crossAxisSpacing: 16.0,
+                            mainAxisSpacing: 16.0,
+                          ),
+                          itemCount: bloodInventory.length,
+                          itemBuilder: (context, index) {
+                            return _buildInventoryCard(bloodInventory[index], index);
+                          },
+                        ),
+                      ),
           ),
         ],
       ),

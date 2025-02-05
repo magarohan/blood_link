@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart'
+    as http;
+import 'dart:convert';
 
 class UpdateBloodInventory
     extends StatefulWidget {
@@ -68,6 +71,51 @@ class _UpdateBloodInventoryState
         0;
   }
 
+  Future<void>
+      updateBloodInventory() async {
+    const String
+        url =
+        'http://localhost:4000/api/bloods/updateBlood'; // Change to your backend URL
+
+    try {
+      final Map<String, dynamic> data = {
+        "bloodType": widget.bloodType['type'].substring(0, widget.bloodType['type'].length - 1), // Extract blood type
+        "rhFactor": widget.bloodType['type'].substring(widget.bloodType['type'].length - 1), // Extract rh factor
+        "components": {
+          "wholeBlood": _parseValue(updatedValues['wholeBlood']),
+          "redBloodCells": _parseValue(updatedValues['rbc']),
+          "whiteBloodCells": _parseValue(updatedValues['wbc']),
+          "platelets": _parseValue(updatedValues['platelets']),
+          "plasma": _parseValue(updatedValues['plasma']),
+          "cryoprecipitate": _parseValue(updatedValues['cryo']),
+        }
+      };
+
+      final response = await http.patch(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: json.encode(data),
+      );
+
+      if (response.statusCode == 200) {
+        print("Blood inventory updated successfully");
+        Navigator.pop(context, updatedValues); // Pass updated values back
+      } else {
+        print("Failed to update blood inventory: ${response.body}");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to update blood inventory")),
+        );
+      }
+    } catch (error) {
+      print("Error updating blood inventory: $error");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error updating blood inventory")),
+      );
+    }
+  }
+
   @override
   Widget
       build(BuildContext context) {
@@ -135,9 +183,7 @@ class _UpdateBloodInventoryState
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context, updatedValues); // Pass updated values back
-                },
+                onPressed: updateBloodInventory, // Call API when saving
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   shape: RoundedRectangleBorder(

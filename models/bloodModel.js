@@ -37,32 +37,32 @@ const bloodSchema = new mongoose.Schema({
       default: 0, // Units of cryoprecipitate available
     },
   },
-  donations: [
-    {
-      donorId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Donor", // Reference to a Donor collection
-      },
-      date: {
-        type: Date,
-        default: Date.now, // Donation date
-      },
-      quantity: {
-        type: Number,
-        required: true, // Quantity of blood donated in mL
-      },
-      componentType: {
-        type: String,
-        enum: [
-          "wholeBlood",
-          "redBloodCells",
-          "platelets",
-          "plasma",
-          "cryoprecipitate",
-        ], // Type of component donated
-      },
-    },
-  ],
+  // donations: [
+  //   {
+  //     donorId: {
+  //       type: mongoose.Schema.Types.ObjectId,
+  //       ref: "Donor", // Reference to a Donor collection
+  //     },
+  //     date: {
+  //       type: Date,
+  //       default: Date.now, // Donation date
+  //     },
+  //     quantity: {
+  //       type: Number,
+  //       required: true, // Quantity of blood donated in mL
+  //     },
+  //     componentType: {
+  //       type: String,
+  //       enum: [
+  //         "wholeBlood",
+  //         "redBloodCells",
+  //         "platelets",
+  //         "plasma",
+  //         "cryoprecipitate",
+  //       ], // Type of component donated
+  //     },
+  //   },
+  // ],
   createdAt: {
     type: Date,
     default: Date.now, // Record creation date
