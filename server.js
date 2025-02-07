@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const userRoutes = require("./routes/users");
 const bloodRoutes = require("./routes/bloods");
+const requestRoutes = require("./routes/requests");
 const cors = require("cors");
 
 // Express app
@@ -12,13 +13,16 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 app.use((req, res, next) => {
-    console.log(req.path, req.method);
+    console.log(`Request: ${req.method} ${req.path}, Query:`, req.query);
     next();
 });
+
 
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/bloods', bloodRoutes);
+app.use('/api/requests', requestRoutes);
+
 
 // Connect to DB
 mongoose.connect(process.env.MONGO_URI)

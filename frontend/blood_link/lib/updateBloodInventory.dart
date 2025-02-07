@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart'
     as http;
 import 'dart:convert';
@@ -128,7 +129,14 @@ class _UpdateBloodInventoryState
                 IconButton(onPressed: () => setState(() => updatedValues[key] = '${_parseValue(updatedValues[key]) + 1} ${_units[key]}'), icon: const Icon(Icons.add)),
               ],
             ),
-          ElevatedButton(onPressed: updateBloodInventory, child: const Text("Save Changes")),
+          ElevatedButton(
+            onPressed: updateBloodInventory,
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text(
+              "Save Changes",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
         ],
       ),
     );
