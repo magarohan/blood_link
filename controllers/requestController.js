@@ -94,6 +94,9 @@ const searchRequest = async (req, res) => {
 
     try {
         const requestRecords = await Request.find({ bloodType, rhFactor });
+        if(!bloodType|| !rhFactor){
+            return res.status(404).json({ error: "both bloodType and rhFactor are needed" });
+        }
         if (requestRecords.length === 0) {
             return res.status(404).json({ error: "No matching request records found" });
         }

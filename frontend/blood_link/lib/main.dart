@@ -7,6 +7,7 @@ import 'package:blood_link/donorManagement.dart';
 import 'package:blood_link/staffManagent.dart';
 import 'package:blood_link/updateBloodInventory.dart';
 import 'package:blood_link/bloodBank.dart';
+import 'package:blood_link/addRequestPage.dart';
 
 void
     main() {
@@ -37,6 +38,7 @@ class MyApp
         '/DonorManagementPage': (context) => const DonorManagementPage(),
         '/StaffManagementPage': (context) => const StaffManagementPage(),
         '/BloodBank': (context) => const BloodBank(),
+        '/AddRequestPage': (context) => const AddRequestPage(),
         '/UpdateBloodInventory': (context) {
           // Retrieve the arguments passed to the route
           final Map<String, dynamic> bloodType = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
