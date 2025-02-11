@@ -21,8 +21,7 @@ const List<String>
 class AddRequestPage
     extends StatefulWidget {
   const AddRequestPage(
-      {Key? key})
-      : super(key: key);
+      {super.key});
 
   @override
   _AddRequestState createState() =>
@@ -87,7 +86,7 @@ class _AddRequestState
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Request Added Successfully!')),
         );
-        Navigator.pop(context, true); // Go back and refresh list
+        Navigator.pop(context, true);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to Add Request')),
