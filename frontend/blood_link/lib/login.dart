@@ -87,9 +87,6 @@ class _LoginScreenState
       });
 
       if (response.statusCode == 200) {
-        // If login is successful, parse the response
-        final responseData = json.decode(response.body);
-
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Login Successful!')),
         );

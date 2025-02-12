@@ -106,7 +106,6 @@ class _BloodRequestsPageState
                 ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigate to Add Request Page
           Navigator.pushNamed(context, '/AddRequestPage');
         },
         backgroundColor: Colors.red,

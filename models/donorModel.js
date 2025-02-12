@@ -4,7 +4,7 @@ const validator = require('validator');
 
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
+const donorSchema = new Schema({
     fullName: {
         type: String,
         required: [true, 'Full name is required'],
@@ -46,15 +46,10 @@ const userSchema = new Schema({
         required: [true, 'Password is required'],
         minlength: [6, 'Password must be at least 6 characters long'],
     },
-    userType:{
-        type: String,
-        enum: ['donor', 'staff', 'admin'],
-        default: 'donor',
-    },
 }, { timestamps: true });
 
-// Signup a user
-userSchema.statics.signup = async function (fullName, bloodGroup, location, email, phoneNumber, password) {
+// Signup a donor
+donorSchema.statics.signup = async function (fullName, bloodGroup, location, email, phoneNumber, password) {
     const exists = await this.findOne({ email });
     if (exists) {
         throw Error('Email already in use');
@@ -63,7 +58,7 @@ userSchema.statics.signup = async function (fullName, bloodGroup, location, emai
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
-    const user = await this.create({
+    const donor = await this.create({
         fullName,
         bloodGroup,
         location,
@@ -72,22 +67,22 @@ userSchema.statics.signup = async function (fullName, bloodGroup, location, emai
         password: hash,
     });
 
-    return user;
+    return donor;
 };
 
-//login user
-userSchema.statics.login = async function (email, password) {
+//login donor
+donorSchema.statics.login = async function (email, password) {
     if(!email && !password){
         throw Error('Email and password are required');
     }
-    const user = await this.findOne({ email });
-    if (!user) {
+    const donor = await this.findOne({ email });
+    if (!donor) {
         throw Error('Incorrect email');
     }
-    const match = await bcrypt.compare(password, user.password)
+    const match = await bcrypt.compare(password, donor.password)
     if (!match) {
         throw Error('Incorrect password');
     }
-    return user;
+    return donor;
 }
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('Donor', donorSchema);

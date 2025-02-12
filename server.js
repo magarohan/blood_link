@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
-const userRoutes = require("./routes/users");
+const donorRoutes = require("./routes/donors");
 const bloodRoutes = require("./routes/bloods");
 const requestRoutes = require("./routes/requests");
 const cors = require("cors");
@@ -19,7 +19,7 @@ app.use((req, res, next) => {
 
 
 // Routes
-app.use('/api/users', userRoutes);
+app.use('/api/donors', donorRoutes);
 app.use('/api/bloods', bloodRoutes);
 app.use('/api/requests', requestRoutes);
 
