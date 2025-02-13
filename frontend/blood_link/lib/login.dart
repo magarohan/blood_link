@@ -4,8 +4,8 @@ import 'signup.dart';
 import 'package:http/http.dart'
     as http;
 import 'dart:convert';
-import 'adminHome.dart';
-import 'bloodBank.dart';
+import 'admin_home.dart';
+import 'blood_bank.dart';
 
 class LoginScreen
     extends StatefulWidget {

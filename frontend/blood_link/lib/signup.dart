@@ -10,11 +10,11 @@ class SignupScreen
       {super.key});
 
   @override
-  _SignupScreenState createState() =>
-      _SignupScreenState();
+  SignupScreenState createState() =>
+      SignupScreenState();
 }
 
-class _SignupScreenState
+class SignupScreenState
     extends State<SignupScreen> {
   final _fullNameController =
       TextEditingController();

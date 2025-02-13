@@ -1,4 +1,4 @@
-import 'package:blood_link/updateDonorPage.dart';
+import 'package:blood_link/update_donor_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
@@ -10,11 +10,11 @@ class DonorManagementPage
       {super.key});
 
   @override
-  _DonorManagementPageState createState() =>
-      _DonorManagementPageState();
+  DonorManagementPageState createState() =>
+      DonorManagementPageState();
 }
 
-class _DonorManagementPageState
+class DonorManagementPageState
     extends State<DonorManagementPage> {
   List<Map<String, dynamic>>
       donors =

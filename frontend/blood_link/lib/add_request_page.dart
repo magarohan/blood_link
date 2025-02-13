@@ -24,11 +24,11 @@ class AddRequestPage
       {super.key});
 
   @override
-  _AddRequestState createState() =>
-      _AddRequestState();
+  AddRequestState createState() =>
+      AddRequestState();
 }
 
-class _AddRequestState
+class AddRequestState
     extends State<AddRequestPage> {
   final TextEditingController
       _nameController =

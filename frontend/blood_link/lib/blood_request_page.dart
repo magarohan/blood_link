@@ -9,11 +9,11 @@ class BloodRequestsPage
       {super.key});
 
   @override
-  _BloodRequestsPageState createState() =>
-      _BloodRequestsPageState();
+  BloodRequestsPageState createState() =>
+      BloodRequestsPageState();
 }
 
-class _BloodRequestsPageState
+class BloodRequestsPageState
     extends State<BloodRequestsPage> {
   List<dynamic>
       bloodRequests =

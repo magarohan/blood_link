@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:blood_link/login.dart';
 import 'package:blood_link/signup.dart';
-import 'package:blood_link/adminHome.dart';
-import 'package:blood_link/bloodRequestPage.dart';
-import 'package:blood_link/donorManagement.dart';
-import 'package:blood_link/staffManagent.dart';
-import 'package:blood_link/updateBloodInventory.dart';
-import 'package:blood_link/bloodBank.dart';
-import 'package:blood_link/addRequestPage.dart';
-import 'package:blood_link/updateDonorPage.dart';
+import 'package:blood_link/admin_home.dart';
+import 'package:blood_link/blood_request_page.dart';
+import 'package:blood_link/donor_management.dart';
+import 'package:blood_link/staff_managent.dart';
+import 'package:blood_link/update_blood_inventory.dart';
+import 'package:blood_link/blood_bank.dart';
+import 'package:blood_link/add_request_page.dart';
+import 'package:blood_link/update_donor_page.dart';
 
 void
     main() {
