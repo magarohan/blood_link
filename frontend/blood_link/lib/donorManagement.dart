@@ -98,6 +98,13 @@ class _DonorManagementPageState
                     return _buildDonorCard(donors[index]);
                   },
                 ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/Signup');
+        },
+        backgroundColor: Colors.red,
+        child: const Icon(Icons.add),
+      ),
     );
   }
 

@@ -62,8 +62,9 @@ class _UpdateDonorPageState
   Future<void>
       updateDonor() async {
     if (widget.donor ==
-        null)
+        null) {
       return;
+    }
 
     setState(() {
       _isLoading = true;
