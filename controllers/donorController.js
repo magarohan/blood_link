@@ -93,6 +93,15 @@ const deleteDonor = async (req, res) => {
 // Update a donor
 const updateDonor = async (req, res) => {
     const { id } = req.params;
+
+    if (!id) {
+        return res.status(400).json({ error: "Donor ID is required" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({ error: "No such donor" });
+    }
+
     const updates = req.body;
 
     try {

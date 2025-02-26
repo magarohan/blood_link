@@ -43,16 +43,18 @@ class DonorManagementPageState
       if (response.statusCode == 200) {
         setState(() {
           List<dynamic> responseData = json.decode(response.body);
-          donors = responseData
-              .map((donor) => {
-                    "id": donor["_id"],
-                    "name": donor["fullName"] ?? "Unknown",
-                    "email": donor["email"] ?? "No email",
-                    "phoneNumber": donor["phoneNumber"] ?? "No phone",
-                    "bloodGroup": donor["bloodGroup"] ?? "Unknown",
-                    "location": donor["location"] ?? "No location",
-                  })
-              .toList();
+          donors = responseData.map((donor) {
+            // Print donor ID to check if _id exists in the response
+            print('Donor ID from API: ${donor["_id"]}');
+            return {
+              "id": donor["_id"], // Use "_id" from the response
+              "name": donor["fullName"] ?? "Unknown",
+              "email": donor["email"] ?? "No email",
+              "phoneNumber": donor["phoneNumber"] ?? "No phone",
+              "bloodGroup": donor["bloodGroup"] ?? "Unknown",
+              "location": donor["location"] ?? "No location",
+            };
+          }).toList();
           isLoading = false;
         });
       } else {
@@ -129,6 +131,7 @@ class DonorManagementPageState
             IconButton(
               icon: const Icon(Icons.edit, color: Colors.blue),
               onPressed: () {
+                print('Navigating to update donor with ID: ${donor["id"]}');
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -139,7 +142,7 @@ class DonorManagementPageState
             ),
             IconButton(
               icon: const Icon(Icons.delete, color: Colors.red),
-              onPressed: () => deleteDonor(donor["id"]),
+              onPressed: () => deleteDonor(donor["id"]), // Use "id" here
             ),
           ],
         ),

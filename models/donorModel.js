@@ -70,9 +70,9 @@ donorSchema.statics.signup = async function (fullName, bloodGroup, location, ema
     return donor;
 };
 
-//login donor
+// Login donor
 donorSchema.statics.login = async function (email, password) {
-    if(!email && !password){
+    if (!email && !password) {
         throw Error('Email and password are required');
     }
     const donor = await this.findOne({ email });
@@ -84,5 +84,6 @@ donorSchema.statics.login = async function (email, password) {
         throw Error('Incorrect password');
     }
     return donor;
-}
+};
+
 module.exports = mongoose.model('Donor', donorSchema);
