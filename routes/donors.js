@@ -13,7 +13,7 @@ router.get('/:id', getDonor)
 router.delete('/:id', deleteDonor)
 
 //update a donor
-router.patch('/:id', updateDonor)
+router.patch('/update/:id', updateDonor)
 
 //login donor
 router.post('/login', loginDonor)

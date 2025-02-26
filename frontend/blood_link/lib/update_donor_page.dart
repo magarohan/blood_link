@@ -9,8 +9,9 @@ class UpdateDonorPage
       String,
       dynamic> donor;
 
-  UpdateDonorPage(
-      {required this.donor});
+  const UpdateDonorPage(
+      {super.key,
+      required this.donor});
 
   @override
   _UpdateDonorPageState createState() =>
@@ -68,8 +69,7 @@ class _UpdateDonorPageState
         donorId =
         widget.donor["id"];
     print('Donor ID in UpdateDonorPage: $donorId'); // Verify ID
-    if (donorId == null ||
-        donorId.isEmpty) {
+    if (donorId.isEmpty) {
       print("Error: Donor ID is missing");
       setState(() {
         isLoading = false;
@@ -148,8 +148,8 @@ class _UpdateDonorPageState
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: updateDonor,
-                    child: const Text('Update Donor'),
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                    child: const Text('Update Donor'),
                   ),
                 ],
               ),
