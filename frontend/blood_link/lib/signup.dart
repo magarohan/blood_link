@@ -115,7 +115,6 @@ class SignupScreenState
   Widget
       build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Sign Up'),
         backgroundColor: Colors.red,

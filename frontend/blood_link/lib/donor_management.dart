@@ -19,6 +19,9 @@ class DonorManagementPageState
   List<Map<String, dynamic>>
       donors =
       [];
+  Map<String, int>
+      bloodGroupCounts =
+      {}; // Stores count of each blood type
   bool
       isLoading =
       true;
@@ -44,10 +47,8 @@ class DonorManagementPageState
         setState(() {
           List<dynamic> responseData = json.decode(response.body);
           donors = responseData.map((donor) {
-            // Print donor ID to check if _id exists in the response
-            print('Donor ID from API: ${donor["_id"]}');
             return {
-              "id": donor["_id"], // Use "_id" from the response
+              "id": donor["_id"],
               "name": donor["fullName"] ?? "Unknown",
               "email": donor["email"] ?? "No email",
               "phoneNumber": donor["phoneNumber"] ?? "No phone",
@@ -55,6 +56,14 @@ class DonorManagementPageState
               "location": donor["location"] ?? "No location",
             };
           }).toList();
+
+          // Reset and count blood groups
+          bloodGroupCounts.clear();
+          for (var donor in donors) {
+            String bloodGroup = donor["bloodGroup"] ?? "Unknown";
+            bloodGroupCounts[bloodGroup] = (bloodGroupCounts[bloodGroup] ?? 0) + 1;
+          }
+
           isLoading = false;
         });
       } else {
@@ -75,6 +84,7 @@ class DonorManagementPageState
       if (response.statusCode == 200) {
         setState(() {
           donors.removeWhere((donor) => donor["id"] == id);
+          fetchDonors(); // Refresh the blood group counts
         });
       } else {
         throw Exception('Failed to delete donor');
@@ -93,12 +103,33 @@ class DonorManagementPageState
           ? const Center(child: CircularProgressIndicator())
           : errorMessage.isNotEmpty
               ? Center(child: Text(errorMessage, style: const TextStyle(color: Colors.red)))
-              : ListView.builder(
-                  padding: const EdgeInsets.all(16.0),
-                  itemCount: donors.length,
-                  itemBuilder: (context, index) {
-                    return _buildDonorCard(donors[index]);
-                  },
+              : Column(
+                  children: [
+                    // Blood Group Count Summary
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: bloodGroupCounts.entries.map((entry) {
+                          return Text(
+                            "${entry.key}: ${entry.value} donors",
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+
+                    // Donor List
+                    Expanded(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(16.0),
+                        itemCount: donors.length,
+                        itemBuilder: (context, index) {
+                          return _buildDonorCard(donors[index]);
+                        },
+                      ),
+                    ),
+                  ],
                 ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -131,7 +162,6 @@ class DonorManagementPageState
             IconButton(
               icon: const Icon(Icons.edit, color: Colors.blue),
               onPressed: () {
-                print('Navigating to update donor with ID: ${donor["id"]}');
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -142,7 +172,7 @@ class DonorManagementPageState
             ),
             IconButton(
               icon: const Icon(Icons.delete, color: Colors.red),
-              onPressed: () => deleteDonor(donor["id"]), // Use "id" here
+              onPressed: () => deleteDonor(donor["id"]),
             ),
           ],
         ),

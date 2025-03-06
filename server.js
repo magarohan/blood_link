@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const donorRoutes = require("./routes/donors");
 const bloodRoutes = require("./routes/bloods");
 const requestRoutes = require("./routes/requests");
+const hopitalRoutes = require("./routes/hospitalBloods");
 const cors = require("cors");
 
 // Express app
@@ -22,6 +23,7 @@ app.use((req, res, next) => {
 app.use('/api/donors', donorRoutes);
 app.use('/api/bloods', bloodRoutes);
 app.use('/api/requests', requestRoutes);
+app.use('/api/hospitalBloods', hopitalRoutes);
 
 
 // Connect to DB
