@@ -3,6 +3,7 @@ import 'package:http/http.dart'
     as http;
 import 'dart:convert';
 import 'update_blood_inventory.dart';
+import 'package:pie_chart/pie_chart.dart';
 
 class BloodBank
     extends StatefulWidget {
@@ -65,64 +66,24 @@ class _BloodBankState
       print('Error fetching blood inventory: $error');
       setState(() {
         isLoading = false;
+        bloodInventory = []; // Optionally clear inventory on error
       });
     }
   }
 
-  // UI for each blood inventory item
-  Widget
-      _buildInventoryCard(Map<String, dynamic> bloodType) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.red),
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            bloodType['type'] ?? 'N/A',
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
-          ),
-          const SizedBox(height: 10),
-          Text('Whole blood: ${bloodType['wholeBlood']}'),
-          Text('RBC: ${bloodType['rbc']}'),
-          Text('WBC: ${bloodType['wbc']}'),
-          Text('Platelets: ${bloodType['platelets']}'),
-          Text('Plasma: ${bloodType['plasma']}'),
-          Text('Cryoprecipitate: ${bloodType['cryo']}'),
-          const SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => UpdateBloodInventory(bloodType: bloodType),
-                ),
-              ).then((_) {
-                fetchBloodInventory(); // Fetch updated data from backend
-              });
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-            child: const Text('Update', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
+  // Function to generate pie chart data
+  Map<String, double>
+      getPieChartData() {
+    Map<String, double>
+        dataMap =
+        {};
+    for (var item
+        in bloodInventory) {
+      String type = item['type'];
+      double quantity = double.tryParse(item['wholeBlood'].toString().split(' ')[0]) ?? 0.0;
+      dataMap[type] = quantity;
+    }
+    return dataMap;
   }
 
   @override
@@ -134,12 +95,107 @@ class _BloodBankState
           ? const Center(child: CircularProgressIndicator())
           : bloodInventory.isEmpty
               ? const Center(child: Text('No blood inventory available'))
-              : ListView.builder(
-                  padding: const EdgeInsets.all(10),
-                  itemCount: bloodInventory.length,
-                  itemBuilder: (context, index) {
-                    return _buildInventoryCard(bloodInventory[index]);
-                  },
+              : SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 20),
+                      // Pie Chart
+                      PieChart(
+                        dataMap: getPieChartData(),
+                        chartRadius: MediaQuery.of(context).size.width / 2.5,
+                        colorList: [
+                          Colors.red,
+                          Colors.blue,
+                          Colors.green,
+                          Colors.orange,
+                          Colors.purple,
+                          Colors.yellow,
+                          Colors.teal,
+                          Colors.pink,
+                        ],
+                        legendOptions: const LegendOptions(
+                          showLegendsInRow: false,
+                          legendPosition: LegendPosition.right,
+                        ),
+                        chartValuesOptions: const ChartValuesOptions(
+                          showChartValuesInPercentage: true,
+                          showChartValuesOutside: true,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      // Blood Inventory List
+                      ListView.builder(
+                        shrinkWrap: true,
+                        padding: const EdgeInsets.all(10),
+                        itemCount: bloodInventory.length,
+                        itemBuilder: (context, index) {
+                          var bloodType = bloodInventory[index];
+                          return Container(
+                            padding: const EdgeInsets.all(16.0),
+                            margin: const EdgeInsets.symmetric(vertical: 8.0),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(color: Colors.red),
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.2),
+                                  spreadRadius: 2,
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  bloodType['type'] ?? 'N/A',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text('Whole Blood: ${bloodType['wholeBlood']} Pints'),
+                                Text('RBC: ${bloodType['rbc']}'),
+                                Text('WBC: ${bloodType['wbc']}'),
+                                Text('Platelets: ${bloodType['platelets']}'),
+                                Text('Plasma: ${bloodType['plasma']}'),
+                                Text('Cryoprecipitate: ${bloodType['cryo']}'),
+                                const SizedBox(height: 10),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => UpdateBloodInventory(
+                                          bloodType: bloodType,
+                                        ),
+                                      ),
+                                    ).then((_) {
+                                      fetchBloodInventory();
+                                    });
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'Update',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
     );
   }
