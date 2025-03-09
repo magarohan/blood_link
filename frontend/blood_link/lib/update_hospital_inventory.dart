@@ -3,23 +3,23 @@ import 'package:http/http.dart'
     as http;
 import 'dart:convert';
 
-class UpdateBloodInventory
+class UpdateHospitalInventory
     extends StatefulWidget {
   final Map<
       String,
       dynamic> bloodType;
 
-  const UpdateBloodInventory(
+  const UpdateHospitalInventory(
       {super.key,
       required this.bloodType});
 
   @override
-  State<UpdateBloodInventory> createState() =>
+  State<UpdateHospitalInventory> createState() =>
       _UpdateBloodInventoryState();
 }
 
 class _UpdateBloodInventoryState
-    extends State<UpdateBloodInventory> {
+    extends State<UpdateHospitalInventory> {
   late Map<
       String,
       dynamic> updatedValues;
@@ -58,7 +58,7 @@ class _UpdateBloodInventoryState
       updateBloodInventory() async {
     const String
         url =
-        'http://localhost:4000/api/HospitalBloods/updateBlood';
+        'http://localhost:4000/api/hospitalBloods/updateBlood';
 
     String
         bloodType =

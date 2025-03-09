@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
 import 'dart:convert';
-import 'update_blood_inventory.dart';
+import 'update_hospital_inventory.dart';
 
 class AdminHome
     extends StatefulWidget {
@@ -171,7 +171,7 @@ class _AdminHomeState
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => UpdateBloodInventory(bloodType: bloodType)),
+                MaterialPageRoute(builder: (context) => UpdateHospitalInventory(bloodType: bloodType)),
               ).then((_) {
                 fetchBloodInventory();
               });
