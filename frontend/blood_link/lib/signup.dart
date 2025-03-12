@@ -1,3 +1,4 @@
+import 'package:blood_link/themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
@@ -115,9 +116,10 @@ class SignupScreenState
   Widget
       build(BuildContext context) {
     return Scaffold(
+      backgroundColor: MyColors.backgroundColor,
       appBar: AppBar(
-        title: const Text('Sign Up'),
-        backgroundColor: Colors.red,
+        title: const Text('Sign Up', style: TextStyle(color: Colors.white)),
+        backgroundColor: MyColors.primaryColor,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -140,12 +142,12 @@ class SignupScreenState
                       height: 120,
                     ),
                     const SizedBox(height: 10),
-                    const Text(
+                    Text(
                       'Blood Link',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.red,
+                        color: MyColors.primaryColor,
                       ),
                     ),
                   ],
@@ -169,7 +171,7 @@ class SignupScreenState
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
+                    backgroundColor: MyColors.primaryColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -197,10 +199,10 @@ class SignupScreenState
                         ),
                       );
                     },
-                    child: const Text(
+                    child: Text(
                       'Log In.',
                       style: TextStyle(
-                        color: Colors.red,
+                        color: MyColors.primaryColor,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -225,11 +227,11 @@ class SignupScreenState
         hintText: hintText,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.red),
+          borderSide: BorderSide(color: MyColors.primaryColor),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.red, width: 2),
+          borderSide: BorderSide(color: MyColors.primaryColor, width: 2),
         ),
       ),
     );

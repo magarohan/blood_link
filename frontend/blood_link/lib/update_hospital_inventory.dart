@@ -1,3 +1,4 @@
+import 'package:blood_link/themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
@@ -108,7 +109,8 @@ class _UpdateBloodInventoryState
   Widget
       build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Update ${widget.bloodType['type']}'), backgroundColor: Colors.red),
+      backgroundColor: MyColors.backgroundColor,
+      appBar: AppBar(title: Text('Update ${widget.bloodType['type']}, ', style: const TextStyle(color: Colors.white)), backgroundColor: MyColors.primaryColor),
       body: Column(
         children: [
           for (String key in [
@@ -130,7 +132,7 @@ class _UpdateBloodInventoryState
             ),
           ElevatedButton(
             onPressed: updateBloodInventory,
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(backgroundColor: MyColors.primaryColor),
             child: const Text(
               "Save Changes",
               style: TextStyle(color: Colors.white),

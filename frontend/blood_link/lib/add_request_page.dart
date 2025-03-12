@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
 import 'dart:convert';
+import 'package:blood_link/themes/colors.dart';
 
 const List<String>
     rhFactors =
@@ -103,7 +104,13 @@ class AddRequestState
   Widget
       build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Blood Request'), backgroundColor: Colors.red),
+      backgroundColor: MyColors.backgroundColor,
+      appBar: AppBar(
+          title: const Text(
+            'Add Blood Request',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: MyColors.primaryColor),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -160,7 +167,7 @@ class AddRequestState
             Center(
               child: ElevatedButton(
                 onPressed: _addRequest,
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                style: ElevatedButton.styleFrom(backgroundColor: MyColors.primaryColor),
                 child: const Text('Add Request', style: TextStyle(color: Colors.white)),
               ),
             ),

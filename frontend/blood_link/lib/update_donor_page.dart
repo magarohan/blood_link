@@ -1,3 +1,4 @@
+import 'package:blood_link/themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
@@ -14,11 +15,11 @@ class UpdateDonorPage
       required this.donor});
 
   @override
-  _UpdateDonorPageState createState() =>
-      _UpdateDonorPageState();
+  UpdateDonorPageState createState() =>
+      UpdateDonorPageState();
 }
 
-class _UpdateDonorPageState
+class UpdateDonorPageState
     extends State<UpdateDonorPage> {
   final TextEditingController
       _nameController =
@@ -115,9 +116,10 @@ class _UpdateDonorPageState
   Widget
       build(BuildContext context) {
     return Scaffold(
+      backgroundColor: MyColors.backgroundColor,
       appBar: AppBar(
-        title: const Text('Update Donor'),
-        backgroundColor: Colors.red,
+        title: const Text('Update Donor', style: TextStyle(color: Colors.white)),
+        backgroundColor: MyColors.primaryColor,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -148,7 +150,7 @@ class _UpdateDonorPageState
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: updateDonor,
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                    style: ElevatedButton.styleFrom(backgroundColor: MyColors.primaryColor),
                     child: const Text('Update Donor'),
                   ),
                 ],

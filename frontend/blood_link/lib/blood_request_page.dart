@@ -1,3 +1,4 @@
+import 'package:blood_link/themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
@@ -82,9 +83,13 @@ class BloodRequestsPageState
   Widget
       build(BuildContext context) {
     return Scaffold(
+      backgroundColor: MyColors.backgroundColor,
       appBar: AppBar(
-        title: const Text("Blood Requests"),
-        backgroundColor: Colors.red,
+        title: const Text(
+          "Blood Requests",
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: MyColors.primaryColor,
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -108,7 +113,7 @@ class BloodRequestsPageState
         onPressed: () {
           Navigator.pushNamed(context, '/AddRequestPage');
         },
-        backgroundColor: Colors.red,
+        backgroundColor: MyColors.primaryColor,
         child: const Icon(Icons.add),
       ),
     );
@@ -127,16 +132,16 @@ class BloodRequestsPageState
       margin: const EdgeInsets.only(bottom: 16.0),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: Colors.red[100],
+          backgroundColor: MyColors.primaryColor,
           child: Text(
             bloodTypeWithRh,
-            style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            style: TextStyle(color: MyColors.primaryColor, fontWeight: FontWeight.bold),
           ),
         ),
         title: Text(name),
         subtitle: Text(location),
         trailing: IconButton(
-          icon: const Icon(Icons.delete, color: Colors.red),
+          icon: Icon(Icons.delete, color: MyColors.primaryColor),
           onPressed: () => deleteBloodRequest(id),
         ),
       ),

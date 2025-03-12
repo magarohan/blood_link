@@ -1,3 +1,4 @@
+import 'package:blood_link/themes/colors.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen
@@ -9,13 +10,14 @@ class HomeScreen
   Widget
       build(BuildContext context) {
     return Scaffold(
+      backgroundColor: MyColors.backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: MyColors.primaryColor,
         elevation: 0,
-        leading: const Icon(Icons.grid_view, color: Colors.red),
+        leading: const Icon(Icons.grid_view, color: Colors.white),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.red),
+            icon: const Icon(Icons.notifications, color: Colors.white),
             onPressed: () {},
           ),
         ],
@@ -55,7 +57,7 @@ class HomeScreen
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Colors.red,
+        selectedItemColor: MyColors.primaryColor,
         unselectedItemColor: Colors.grey,
         currentIndex: 0,
         onTap: (index) {
@@ -78,15 +80,15 @@ class HomeScreen
       height: 100,
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: Colors.red),
+        border: Border.all(color: MyColors.primaryColor),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: Colors.red, size: 30),
+          Icon(icon, color: MyColors.primaryColor, size: 30),
           const SizedBox(height: 10),
-          Text(title, style: const TextStyle(color: Colors.red)),
+          Text(title, style: TextStyle(color: MyColors.primaryColor)),
         ],
       ),
     );
@@ -100,7 +102,7 @@ class HomeScreen
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: Colors.red),
+        border: Border.all(color: MyColors.primaryColor),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -120,19 +122,19 @@ class HomeScreen
           Column(
             children: [
               CircleAvatar(
-                backgroundColor: Colors.red[100],
+                backgroundColor: MyColors.primaryColor,
                 radius: 25,
                 child: Text(
                   bloodType,
-                  style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: MyColors.primaryColor, fontWeight: FontWeight.bold),
                 ),
               ),
               const SizedBox(height: 10),
               TextButton(
                 onPressed: () {},
-                child: const Text(
+                child: Text(
                   "Donate",
-                  style: TextStyle(color: Colors.red),
+                  style: TextStyle(color: MyColors.primaryColor),
                 ),
               ),
             ],

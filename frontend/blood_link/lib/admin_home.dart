@@ -3,6 +3,7 @@ import 'package:http/http.dart'
     as http;
 import 'dart:convert';
 import 'update_hospital_inventory.dart';
+import 'package:blood_link/themes/colors.dart';
 
 class AdminHome
     extends StatefulWidget {
@@ -72,13 +73,14 @@ class _AdminHomeState
   Widget
       build(BuildContext context) {
     return Scaffold(
+      backgroundColor: MyColors.backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: MyColors.primaryColor,
         elevation: 0,
-        leading: const Icon(Icons.grid_view, color: Colors.red),
+        leading: const Icon(Icons.grid_view, color: Colors.white),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.red),
+            icon: const Icon(Icons.notifications, color: Colors.white),
             onPressed: () {},
           ),
         ],
@@ -98,9 +100,9 @@ class _AdminHomeState
               ],
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               "Blood Inventory",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: MyColors.primaryColor),
             ),
             const SizedBox(height: 10),
             isLoading
@@ -119,7 +121,7 @@ class _AdminHomeState
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Colors.red,
+        selectedItemColor: MyColors.primaryColor,
         unselectedItemColor: Colors.grey,
         currentIndex: 0,
         onTap: (index) {
@@ -141,7 +143,7 @@ class _AdminHomeState
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: Colors.red),
+        border: Border.all(color: MyColors.primaryColor),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
@@ -157,7 +159,7 @@ class _AdminHomeState
         children: [
           Text(
             bloodType['type'] ?? 'N/A',
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: MyColors.primaryColor),
           ),
           const SizedBox(height: 10),
           Text('Whole blood: ${bloodType['wholeBlood']}'),
@@ -177,7 +179,7 @@ class _AdminHomeState
               });
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: MyColors.primaryColor,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
             child: const Text('Update', style: TextStyle(color: Colors.white)),
@@ -199,17 +201,20 @@ class _AdminHomeState
       child: Container(
         width: 110,
         height: 100,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: Colors.red),
-          borderRadius: BorderRadius.circular(10),
-        ),
+        decoration: BoxDecoration(color: Colors.white, border: Border.all(color: MyColors.primaryColor), borderRadius: BorderRadius.circular(10), boxShadow: const [
+          BoxShadow(
+            color: Colors.grey,
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: Offset(0, 3),
+          )
+        ]),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.red, size: 30),
+            Icon(icon, color: MyColors.primaryColor, size: 30),
             const SizedBox(height: 10),
-            Text(title, style: const TextStyle(color: Colors.red)),
+            Text(title, style: TextStyle(color: MyColors.primaryColor)),
           ],
         ),
       ),

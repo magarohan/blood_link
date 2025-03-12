@@ -1,3 +1,4 @@
+import 'package:blood_link/themes/colors.dart';
 import 'package:blood_link/update_donor_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
@@ -98,11 +99,17 @@ class DonorManagementPageState
   Widget
       build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Donor Management"), backgroundColor: Colors.red),
+      backgroundColor: MyColors.backgroundColor,
+      appBar: AppBar(
+          title: const Text(
+            "Donor Management",
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: MyColors.primaryColor),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : errorMessage.isNotEmpty
-              ? Center(child: Text(errorMessage, style: const TextStyle(color: Colors.red)))
+              ? Center(child: Text(errorMessage, style: TextStyle(color: MyColors.primaryColor)))
               : Column(
                   children: [
                     // Blood Group Count Summary
@@ -135,7 +142,7 @@ class DonorManagementPageState
         onPressed: () {
           Navigator.pushNamed(context, '/Signup');
         },
-        backgroundColor: Colors.red,
+        backgroundColor: MyColors.primaryColor,
         child: const Icon(Icons.add),
       ),
     );
@@ -171,7 +178,7 @@ class DonorManagementPageState
               },
             ),
             IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
+              icon: Icon(Icons.delete, color: MyColors.primaryColor),
               onPressed: () => deleteDonor(donor["id"]),
             ),
           ],

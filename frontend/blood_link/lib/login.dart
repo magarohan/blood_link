@@ -1,3 +1,4 @@
+import 'package:blood_link/themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'home.dart';
 import 'signup.dart';
@@ -119,6 +120,7 @@ class _LoginScreenState
   Widget
       build(BuildContext context) {
     return Scaffold(
+      backgroundColor: MyColors.backgroundColor,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -127,9 +129,9 @@ class _LoginScreenState
               const SizedBox(height: 80),
               Image.asset('assets/blood_drop.png', height: 120),
               const SizedBox(height: 10),
-              const Text(
+              Text(
                 'Blood Link',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.red),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: MyColors.primaryColor),
               ),
               const SizedBox(height: 40),
               TextField(
@@ -148,7 +150,7 @@ class _LoginScreenState
                   : ElevatedButton(
                       onPressed: _login,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
+                        backgroundColor: MyColors.primaryColor,
                       ),
                       child: const Text(
                         'Login',

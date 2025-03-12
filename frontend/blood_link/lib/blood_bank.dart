@@ -1,3 +1,4 @@
+import 'package:blood_link/themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
@@ -90,7 +91,13 @@ class _BloodBankState
   Widget
       build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Blood Inventory'), backgroundColor: Colors.red),
+      backgroundColor: MyColors.backgroundColor,
+      appBar: AppBar(
+          title: const Text(
+            'Blood Inventory',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: MyColors.primaryColor),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : bloodInventory.isEmpty
@@ -103,7 +110,7 @@ class _BloodBankState
                       PieChart(
                         dataMap: getPieChartData(),
                         chartRadius: MediaQuery.of(context).size.width / 2.5,
-                        colorList: [
+                        colorList: const [
                           Colors.red,
                           Colors.blue,
                           Colors.green,

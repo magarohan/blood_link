@@ -1,4 +1,5 @@
 import 'package:blood_link/signup.dart';
+import 'package:blood_link/themes/colors.dart';
 import 'package:flutter/material.dart';
 
 class StaffManagementPage
@@ -10,9 +11,10 @@ class StaffManagementPage
   Widget
       build(BuildContext context) {
     return Scaffold(
+      backgroundColor: MyColors.backgroundColor,
       appBar: AppBar(
-        title: const Text("Staff Management"),
-        backgroundColor: Colors.red,
+        title: const Text("Staff Management", style: TextStyle(color: Colors.white)),
+        backgroundColor: MyColors.primaryColor,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
@@ -28,7 +30,7 @@ class StaffManagementPage
             MaterialPageRoute(builder: (context) => const SignupScreen()),
           );
         },
-        backgroundColor: Colors.red,
+        backgroundColor: MyColors.primaryColor,
         child: const Icon(Icons.add),
       ),
     );
@@ -52,7 +54,7 @@ class StaffManagementPage
               },
             ),
             IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
+              icon: Icon(Icons.delete, color: MyColors.primaryColor),
               onPressed: () {
                 // Delete staff logic
               },
