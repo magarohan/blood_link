@@ -129,7 +129,9 @@ class _AdminHomeState
         unselectedItemColor: Colors.grey,
         currentIndex: 0,
         onTap: (index) {
-          // Handle navigation logic here if needed
+          if (index == 1) {
+            Navigator.pushNamed(context, '/BloodBankList');
+          }
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),

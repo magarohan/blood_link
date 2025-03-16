@@ -1,6 +1,6 @@
 const express = require('express');
 const {
-    getAllBlood,
+    getBloodByBank,
     getBloodById,
     addBlood,
     updateBlood,
@@ -10,16 +10,16 @@ const {
 
 const router = express.Router();
 
-// Get all blood records
-router.get('/', getAllBlood);
+// Get all blood records for a specific blood bank
+router.get('/bank/:bloodBankId', getBloodByBank);
 
-// Search blood records by type and Rh factor
+// Search blood records by type and Rh factor (across all blood banks)
 router.get('/search', searchBlood);
 
 // Get a single blood record by ID
 router.get('/:id', getBloodById);
 
-// Add a new blood record
+// Add a new blood record to a blood bank
 router.post('/', addBlood);
 
 // Update a blood record by ID
@@ -27,8 +27,5 @@ router.patch('/:id', updateBlood);
 
 // Delete a blood record by ID
 router.delete('/:id', deleteBlood);
-
-//search
-router.get('/search', searchBlood);
 
 module.exports = router;

@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 
 const bloodSchema = new mongoose.Schema({
+  bloodBankId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "BloodBank", 
+    required: true,
+  },
   bloodType: {
     type: String,
     required: true,

@@ -7,6 +7,7 @@ import 'package:http/http.dart'
 import 'dart:convert';
 import 'admin_home.dart';
 import 'blood_bank.dart';
+import 'bloodbank_list.dart';
 
 class LoginScreen
     extends StatefulWidget {
@@ -55,11 +56,19 @@ class _LoginScreenState
       return;
     }
 
-    if (email == "bloodbank" &&
-        password == "bloodbank") {
+    // if (email == "bloodbank" &&
+    //     password == "bloodbank") {
+    //   Navigator.pushReplacement(
+    //     context,
+    //     MaterialPageRoute(builder: (context) => const BloodBank()),
+    //   );
+    //   return;
+    // }
+    if (email == "banklist" &&
+        password == "banklist") {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const BloodBank()),
+        MaterialPageRoute(builder: (context) => const BloodBankList()),
       );
       return;
     }

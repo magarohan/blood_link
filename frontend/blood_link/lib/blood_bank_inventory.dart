@@ -40,7 +40,7 @@ class _BloodBankState
       fetchBloodInventory() async {
     String
         url =
-        'http://localhost:4000/api/bloodBanks/${widget.bloodBankId}/inventory';
+        'http://localhost:4000/api/bloods/bank/${widget.bloodBankId}';
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -181,19 +181,6 @@ class _BloodBankState
                     ],
                   ),
                 ),
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: MyColors.primaryColor,
-        unselectedItemColor: Colors.grey,
-        currentIndex: 0,
-        onTap: (index) {
-          // Handle navigation logic here if needed
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
-        ],
-      ),
     );
   }
 }

@@ -5,6 +5,7 @@ const donorRoutes = require("./routes/donors");
 const bloodRoutes = require("./routes/bloods");
 const requestRoutes = require("./routes/requests");
 const hopitalRoutes = require("./routes/hospitalBloods");
+const bloodBankRoutes = require("./routes/bloodBanks");
 const cors = require("cors");
 
 // Express app
@@ -24,6 +25,7 @@ app.use('/api/donors', donorRoutes);
 app.use('/api/bloods', bloodRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/hospitalBloods', hopitalRoutes);
+app.use('/api/bloodBanks', bloodBankRoutes);
 
 
 // Connect to DB

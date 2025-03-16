@@ -9,6 +9,7 @@ import 'package:blood_link/update_blood_inventory.dart';
 import 'package:blood_link/blood_bank.dart';
 import 'package:blood_link/add_request_page.dart';
 import 'package:blood_link/update_donor_page.dart';
+import 'package:blood_link/bloodbank_list.dart';
 
 void
     main() {
@@ -38,7 +39,9 @@ class MyApp
         '/BloodRequestsPage': (context) => const BloodRequestsPage(),
         '/DonorManagementPage': (context) => const DonorManagementPage(),
         '/StaffManagementPage': (context) => const StaffManagementPage(),
-        '/BloodBank': (context) => const BloodBank(),
+        '/BloodBank': (context) => const BloodBank(
+              bloodBankId: '',
+            ),
         '/AddRequestPage': (context) => const AddRequestPage(),
         '/UpdateBloodInventory': (context) {
           final Map<String, dynamic> bloodType = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
@@ -48,6 +51,7 @@ class MyApp
           final Map<String, dynamic> donor = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
           return UpdateDonorPage(donor: donor);
         },
+        '/BloodBankList': (context) => const BloodBankList(),
       },
     );
   }

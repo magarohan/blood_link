@@ -1,6 +1,22 @@
 const mongoose = require('mongoose');
 const Blood = require('../models/bloodModel');
 
+//get blood by bank
+const getBloodByBank = async (req, res) => {
+    const { bloodBankId } = req.params;
+    
+    if (!mongoose.Types.ObjectId.isValid(bloodBankId)) {
+        return res.status(404).json({ error: "Invalid blood bank ID" });
+    }
+
+    try {
+        const bloodRecords = await Blood.find({ bloodBankId });
+        res.status(200).json(bloodRecords);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 // Get all blood entries
 const getAllBlood = async (req, res) => {
     try {
@@ -32,23 +48,38 @@ const getBloodById = async (req, res) => {
 
 // Add a new blood record
 const addBlood = async (req, res) => {
-    const { bloodType, rhFactor, components } = req.body;
+    const { bloodBankId, bloodType, rhFactor, components } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(bloodBankId)) {
+        return res.status(400).json({ error: "Invalid blood bank ID" });
+    }
 
     try {
-        const newBloodRecord = await Blood.create({ bloodType, rhFactor, components });
+        const existingRecord = await Blood.findOne({ bloodBankId, bloodType, rhFactor });
+        if (existingRecord) {
+            return res.status(400).json({ error: "Blood record already exists for this blood bank" });
+        }
+
+        const newBloodRecord = await Blood.create({ bloodBankId, bloodType, rhFactor, components });
         res.status(201).json(newBloodRecord);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
 
+
 // Update an existing blood record
 const updateBlood = async (req, res) => {
-    const { bloodType, rhFactor, components } = req.body;
+    const { id } = req.params;
+    const { components } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: "Invalid ID format" });
+    }
 
     try {
-        const updatedBloodRecord = await Blood.findOneAndUpdate(
-            { bloodType, rhFactor },
+        const updatedBloodRecord = await Blood.findByIdAndUpdate(
+            id,
             { $set: { components } },
             { new: true, runValidators: true }
         );
@@ -62,6 +93,7 @@ const updateBlood = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
 
 // Delete a blood record
 const deleteBlood = async (req, res) => {
@@ -104,4 +136,5 @@ module.exports = {
     updateBlood,
     deleteBlood,
     searchBlood,
+    getBloodByBank
 };
