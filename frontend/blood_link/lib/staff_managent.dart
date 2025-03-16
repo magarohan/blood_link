@@ -31,7 +31,10 @@ class StaffManagementPage
           );
         },
         backgroundColor: MyColors.primaryColor,
-        child: const Icon(Icons.add),
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
       ),
     );
   }

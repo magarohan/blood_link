@@ -143,7 +143,10 @@ class DonorManagementPageState
           Navigator.pushNamed(context, '/Signup');
         },
         backgroundColor: MyColors.primaryColor,
-        child: const Icon(Icons.add),
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
       ),
     );
   }
