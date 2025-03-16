@@ -43,6 +43,37 @@ class AddRequestState
   String?
       _selectedRhFactor;
 
+  // Component dropdown selections
+  String?
+      _selectedWholeBlood =
+      'None';
+  String?
+      _selectedRedBloodCells =
+      'None';
+  String?
+      _selectedWhiteBloodCells =
+      'None';
+  String?
+      _selectedPlatelets =
+      'None';
+  String?
+      _selectedPlasma =
+      'None';
+  String?
+      _selectedCryoprecipitate =
+      'None';
+
+  final List<String>
+      componentOptions =
+      [
+    'None',
+    '1 unit',
+    '2 units',
+    '3 units',
+    '4 units',
+    '5 units'
+  ];
+
   @override
   void
       dispose() {
@@ -72,6 +103,14 @@ class AddRequestState
       "location": _locationController.text.trim(),
       "bloodType": _selectedBloodType,
       "rhFactor": _selectedRhFactor,
+      "components": {
+        "wholeBlood": _parseComponentSelection(_selectedWholeBlood),
+        "redBloodCells": _parseComponentSelection(_selectedRedBloodCells),
+        "whiteBloodCells": _parseComponentSelection(_selectedWhiteBloodCells),
+        "platelets": _parseComponentSelection(_selectedPlatelets),
+        "plasma": _parseComponentSelection(_selectedPlasma),
+        "cryoprecipitate": _parseComponentSelection(_selectedCryoprecipitate),
+      }
     };
 
     try {
@@ -100,17 +139,43 @@ class AddRequestState
     }
   }
 
+  int _parseComponentSelection(
+      String? selection) {
+    if (selection ==
+        'None') {
+      return 0;
+    } else if (selection ==
+        '1 unit') {
+      return 1;
+    } else if (selection ==
+        '2 units') {
+      return 2;
+    } else if (selection ==
+        '3 units') {
+      return 3;
+    } else if (selection ==
+        '4 units') {
+      return 4;
+    } else if (selection ==
+        '5 units') {
+      return 5;
+    } else {
+      return 0;
+    }
+  }
+
   @override
   Widget
       build(BuildContext context) {
     return Scaffold(
       backgroundColor: MyColors.backgroundColor,
       appBar: AppBar(
-          title: const Text(
-            'Add Blood Request',
-            style: TextStyle(color: Colors.white),
-          ),
-          backgroundColor: MyColors.primaryColor),
+        title: const Text(
+          'Add Blood Request',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: MyColors.primaryColor,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -161,6 +226,100 @@ class AddRequestState
                 );
               }).toList(),
               decoration: const InputDecoration(labelText: 'Rh Factor'),
+            ),
+
+            const SizedBox(height: 10),
+
+            // Components Dropdowns (Select units)
+            DropdownButtonFormField<String>(
+              value: _selectedWholeBlood,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedWholeBlood = newValue;
+                });
+              },
+              items: componentOptions.map((String option) {
+                return DropdownMenuItem<String>(
+                  value: option,
+                  child: Text(option),
+                );
+              }).toList(),
+              decoration: const InputDecoration(labelText: 'Whole Blood'),
+            ),
+            DropdownButtonFormField<String>(
+              value: _selectedRedBloodCells,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedRedBloodCells = newValue;
+                });
+              },
+              items: componentOptions.map((String option) {
+                return DropdownMenuItem<String>(
+                  value: option,
+                  child: Text(option),
+                );
+              }).toList(),
+              decoration: const InputDecoration(labelText: 'Red Blood Cells'),
+            ),
+            DropdownButtonFormField<String>(
+              value: _selectedWhiteBloodCells,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedWhiteBloodCells = newValue;
+                });
+              },
+              items: componentOptions.map((String option) {
+                return DropdownMenuItem<String>(
+                  value: option,
+                  child: Text(option),
+                );
+              }).toList(),
+              decoration: const InputDecoration(labelText: 'White Blood Cells'),
+            ),
+            DropdownButtonFormField<String>(
+              value: _selectedPlatelets,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedPlatelets = newValue;
+                });
+              },
+              items: componentOptions.map((String option) {
+                return DropdownMenuItem<String>(
+                  value: option,
+                  child: Text(option),
+                );
+              }).toList(),
+              decoration: const InputDecoration(labelText: 'Platelets'),
+            ),
+            DropdownButtonFormField<String>(
+              value: _selectedPlasma,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedPlasma = newValue;
+                });
+              },
+              items: componentOptions.map((String option) {
+                return DropdownMenuItem<String>(
+                  value: option,
+                  child: Text(option),
+                );
+              }).toList(),
+              decoration: const InputDecoration(labelText: 'Plasma'),
+            ),
+            DropdownButtonFormField<String>(
+              value: _selectedCryoprecipitate,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedCryoprecipitate = newValue;
+                });
+              },
+              items: componentOptions.map((String option) {
+                return DropdownMenuItem<String>(
+                  value: option,
+                  child: Text(option),
+                );
+              }).toList(),
+              decoration: const InputDecoration(labelText: 'Cryoprecipitate'),
             ),
 
             const SizedBox(height: 20),

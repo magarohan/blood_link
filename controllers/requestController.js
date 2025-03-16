@@ -33,10 +33,10 @@ const getRequestbyId = async (req, res) => {
 
 // Add a new request record
 const addRequest = async (req, res) => {
-    const { name, bloodType, rhFactor, location } = req.body;
+    const { name, bloodType, rhFactor, location, components } = req.body;
 
     try {
-        const newRequestRecord = await Request.create({ name, bloodType, rhFactor, location });
+        const newRequestRecord = await Request.create({ name, bloodType, rhFactor, location, components });
         res.status(201).json(newRequestRecord);
     } catch (error) {
         res.status(400).json({ error: error.message });

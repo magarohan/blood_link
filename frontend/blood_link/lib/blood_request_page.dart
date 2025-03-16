@@ -106,6 +106,7 @@ class BloodRequestsPageState
                       request['location'],
                       request['bloodType'],
                       request['rhFactor'],
+                      request['components'],
                     );
                   },
                 ),
@@ -114,20 +115,49 @@ class BloodRequestsPageState
           Navigator.pushNamed(context, '/AddRequestPage');
         },
         backgroundColor: MyColors.primaryColor,
-        child: const Icon(Icons.add),
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
       ),
     );
   }
 
-  Widget _buildRequestCard(
-      String id,
-      String name,
-      String location,
-      String bloodType,
-      String rhFactor) {
+  Widget
+      _buildRequestCard(
+    String
+        id,
+    String
+        name,
+    String
+        location,
+    String
+        bloodType,
+    String
+        rhFactor,
+    Map<String, dynamic>
+        components, // Assuming components are a map
+  ) {
     String
         bloodTypeWithRh =
         '$bloodType$rhFactor';
+
+    // Generate a string representing the components
+    String
+        componentsText =
+        '';
+
+    // Check if components is not null and not empty
+    if (components.isNotEmpty) {
+      components.forEach((key, value) {
+        if (value > 0) {
+          componentsText += '$key: $value units\n';
+        }
+      });
+    } else {
+      componentsText = 'No components available\n'; // Placeholder when no components are available
+    }
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16.0),
       child: ListTile(
@@ -135,11 +165,17 @@ class BloodRequestsPageState
           backgroundColor: MyColors.primaryColor,
           child: Text(
             bloodTypeWithRh,
-            style: TextStyle(color: MyColors.primaryColor, fontWeight: FontWeight.bold),
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ),
         title: Text(name),
-        subtitle: Text(location),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(location),
+            Text(componentsText),
+          ],
+        ),
         trailing: IconButton(
           icon: Icon(Icons.delete, color: MyColors.primaryColor),
           onPressed: () => deleteBloodRequest(id),
