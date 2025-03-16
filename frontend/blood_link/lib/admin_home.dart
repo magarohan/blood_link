@@ -76,20 +76,10 @@ class _AdminHomeState
       backgroundColor: MyColors.backgroundColor,
       appBar: AppBar(
         backgroundColor: MyColors.primaryColor,
-        elevation: 0,
-        leading: const Icon(Icons.grid_view, color: Colors.white),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.white),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        elevation: 2,
+        title: Column(
           children: [
+            const Text("Admin Panel", style: TextStyle(color: Colors.white, fontSize: 18)),
             const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -99,7 +89,21 @@ class _AdminHomeState
                 _buildFeatureCard(context, Icons.doorbell, "Requests", '/BloodRequestsPage'),
               ],
             ),
-            const SizedBox(height: 20),
+          ],
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(30),
+          ),
+        ),
+        toolbarHeight: 150, // Increases the AppBar height
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 10),
             Text(
               "Blood Inventory",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: MyColors.primaryColor),

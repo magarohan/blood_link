@@ -1,5 +1,6 @@
 import 'package:blood_link/themes/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class HomeScreen
     extends StatelessWidget {
@@ -13,21 +14,16 @@ class HomeScreen
       backgroundColor: MyColors.backgroundColor,
       appBar: AppBar(
         backgroundColor: MyColors.primaryColor,
-        elevation: 0,
-        leading: const Icon(Icons.grid_view, color: Colors.white),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.white),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        elevation: 4,
+        title: Column(
           children: [
-            const SizedBox(height: 10),
+            const Text(
+              'Welcome',
+              style: TextStyle(color: Colors.white),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -35,6 +31,20 @@ class HomeScreen
                 _buildFeatureCard(Icons.history, "History"),
               ],
             ),
+          ],
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(30),
+          ),
+        ),
+        toolbarHeight: 150,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -126,7 +136,7 @@ class HomeScreen
                 radius: 25,
                 child: Text(
                   bloodType,
-                  style: TextStyle(color: MyColors.primaryColor, fontWeight: FontWeight.bold),
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
               const SizedBox(height: 10),

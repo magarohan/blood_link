@@ -70,7 +70,8 @@ class _LoginScreenState
 
     // Send the login request to the backend
     final url =
-        Uri.parse('http://10.0.2.2:4000/api/users/login');
+        // Uri.parse('http://10.0.2.2:4000/api/donors/login');
+        Uri.parse('http://localhost:4000/api/donors/login');
     try {
       final response = await http.post(
         url,

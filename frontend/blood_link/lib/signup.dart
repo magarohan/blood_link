@@ -62,7 +62,8 @@ class SignupScreenState
     });
 
     final url =
-        Uri.parse('http://10.0.2.2:4000/api/users/signup');
+        // Uri.parse('http://10.0.2.2:4000/api/donors/signup');
+        Uri.parse('http://localhost:4000/api/donors/signup');
     try {
       final response = await http.post(
         url,
