@@ -1,4 +1,5 @@
 import 'package:blood_link/themes/colors.dart';
+import 'package:blood_link/update_blood_inventory.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
@@ -8,7 +9,7 @@ import 'package:pie_chart/pie_chart.dart';
 class BloodBank
     extends StatefulWidget {
   final String
-      bloodBankId; // Accept bloodBankId as a parameter
+      bloodBankId;
 
   const BloodBank(
       {super.key,
@@ -35,30 +36,35 @@ class _BloodBankState
     fetchBloodInventory();
   }
 
-  // Fetch blood inventory of a specific blood bank
   Future<void>
       fetchBloodInventory() async {
     String
         url =
-        'http://localhost:4000/api/bloodBanks/${widget.bloodBankId}/inventory';
+        'http://localhost:4000/api/bloods/bank/${widget.bloodBankId}';
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      );
 
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         setState(() {
           bloodInventory = data.map((item) {
             return {
+              'id': item['_id'], // ✅ Ensure the ID is included
               'type': '${item['bloodType']}${item['rhFactor']}',
               'bloodType': item['bloodType'],
               'rhFactor': item['rhFactor'],
-              'wholeBlood': '${item['components']['wholeBlood']} Pints',
-              'rbc': '${item['components']['redBloodCells']} ml',
-              'wbc': '${item['components']['whiteBloodCells']} ml',
-              'platelets': '${item['components']['platelets']} ml',
-              'plasma': '${item['components']['plasma']} ml',
-              'cryo': '${item['components']['cryoprecipitate']} ml',
+              'wholeBlood': item['components']['wholeBlood'] ?? 0,
+              'rbc': item['components']['redBloodCells'] ?? 0,
+              'wbc': item['components']['whiteBloodCells'] ?? 0,
+              'platelets': item['components']['platelets'] ?? 0,
+              'plasma': item['components']['plasma'] ?? 0,
+              'cryo': item['components']['cryoprecipitate'] ?? 0,
             };
           }).toList();
           isLoading = false;
@@ -75,7 +81,6 @@ class _BloodBankState
     }
   }
 
-  // Function to generate pie chart data
   Map<String, double>
       getPieChartData() {
     Map<String, double>
@@ -84,10 +89,16 @@ class _BloodBankState
     for (var item
         in bloodInventory) {
       String type = item['type'];
-      double quantity = double.tryParse(item['wholeBlood'].toString().split(' ')[0]) ?? 0.0;
-      dataMap[type] = quantity;
+      double quantity = (item['wholeBlood'] as num).toDouble();
+      if (quantity > 0) {
+        dataMap[type] = quantity;
+      }
     }
-    return dataMap;
+    return dataMap.isEmpty
+        ? {
+            'No Data': 1
+          }
+        : dataMap;
   }
 
   @override
@@ -102,38 +113,34 @@ class _BloodBankState
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : bloodInventory.isEmpty
-              ? const Center(child: Text('No blood inventory available'))
+              ? const Center(
+                  child: Text(
+                    'No blood inventory available',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                )
               : SingleChildScrollView(
                   child: Column(
                     children: [
                       const SizedBox(height: 20),
-                      // Pie Chart
                       PieChart(
                         dataMap: getPieChartData(),
                         chartRadius: MediaQuery.of(context).size.width / 2.5,
-                        colorList: const [
+                        colorList: [
                           Colors.red,
                           Colors.blue,
                           Colors.green,
                           Colors.orange,
                           Colors.purple,
-                          Colors.yellow,
-                          Colors.teal,
-                          Colors.pink,
+                          Colors.yellow
                         ],
-                        legendOptions: const LegendOptions(
-                          showLegendsInRow: false,
-                          legendPosition: LegendPosition.right,
-                        ),
-                        chartValuesOptions: const ChartValuesOptions(
-                          showChartValuesInPercentage: true,
-                          showChartValuesOutside: true,
-                        ),
+                        legendOptions: const LegendOptions(showLegendsInRow: false, legendPosition: LegendPosition.right),
+                        chartValuesOptions: const ChartValuesOptions(showChartValuesInPercentage: true, showChartValuesOutside: true),
                       ),
                       const SizedBox(height: 20),
-                      // Blood Inventory List
                       ListView.builder(
                         shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
                         padding: const EdgeInsets.all(10),
                         itemCount: bloodInventory.length,
                         itemBuilder: (context, index) {
@@ -146,12 +153,7 @@ class _BloodBankState
                               border: Border.all(color: Colors.red),
                               borderRadius: BorderRadius.circular(10),
                               boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.2),
-                                  spreadRadius: 2,
-                                  blurRadius: 5,
-                                  offset: const Offset(0, 3),
-                                ),
+                                BoxShadow(color: Colors.grey.withOpacity(0.2), spreadRadius: 2, blurRadius: 5, offset: const Offset(0, 3))
                               ],
                             ),
                             child: Column(
@@ -159,20 +161,28 @@ class _BloodBankState
                               children: [
                                 Text(
                                   bloodType['type'] ?? 'N/A',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.red,
-                                  ),
+                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
                                 ),
                                 const SizedBox(height: 10),
-                                Text('Whole Blood: ${bloodType['wholeBlood']}'),
-                                Text('RBC: ${bloodType['rbc']}'),
-                                Text('WBC: ${bloodType['wbc']}'),
-                                Text('Platelets: ${bloodType['platelets']}'),
-                                Text('Plasma: ${bloodType['plasma']}'),
-                                Text('Cryoprecipitate: ${bloodType['cryo']}'),
+                                Text('Whole Blood: ${bloodType['wholeBlood']} Pints'),
+                                Text('RBC: ${bloodType['rbc']} ml'),
+                                Text('WBC: ${bloodType['wbc']} ml'),
+                                Text('Platelets: ${bloodType['platelets']} ml'),
+                                Text('Plasma: ${bloodType['plasma']} ml'),
+                                Text('Cryoprecipitate: ${bloodType['cryo']} ml'),
                                 const SizedBox(height: 10),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => UpdateBloodInventory(bloodType: bloodType),
+                                      ),
+                                    ).then((_) => fetchBloodInventory());
+                                  },
+                                  style: ElevatedButton.styleFrom(backgroundColor: MyColors.primaryColor, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                                  child: const Text('Update', style: TextStyle(color: Colors.white)),
+                                ),
                               ],
                             ),
                           );
@@ -181,19 +191,6 @@ class _BloodBankState
                     ],
                   ),
                 ),
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: MyColors.primaryColor,
-        unselectedItemColor: Colors.grey,
-        currentIndex: 0,
-        onTap: (index) {
-          // Handle navigation logic here if needed
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
-        ],
-      ),
     );
   }
 }

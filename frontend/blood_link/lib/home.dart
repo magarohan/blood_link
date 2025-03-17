@@ -1,6 +1,5 @@
 import 'package:blood_link/themes/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class HomeScreen
     extends StatelessWidget {

@@ -1,3 +1,4 @@
+import 'package:blood_link/blood_bank.dart';
 import 'package:blood_link/themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'home.dart';
@@ -6,7 +7,6 @@ import 'package:http/http.dart'
     as http;
 import 'dart:convert';
 import 'admin_home.dart';
-import 'blood_bank.dart';
 import 'bloodbank_list.dart';
 
 class LoginScreen
@@ -46,77 +46,80 @@ class _LoginScreenState
       return;
     }
 
-    // Hardcoded admin and blood bank login for testing
-    if (email == "admin" &&
-        password == "admin") {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const AdminHome()),
-      );
-      return;
-    }
-
-    // if (email == "bloodbank" &&
-    //     password == "bloodbank") {
-    //   Navigator.pushReplacement(
-    //     context,
-    //     MaterialPageRoute(builder: (context) => const BloodBank()),
-    //   );
-    //   return;
-    // }
-    if (email == "banklist" &&
-        password == "banklist") {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const BloodBankList()),
-      );
-      return;
-    }
-
     setState(() {
       _isLoading = true;
     });
 
-    // Send the login request to the backend
-    final url =
-        // Uri.parse('http://10.0.2.2:4000/api/donors/login');
-        Uri.parse('http://localhost:4000/api/donors/login');
+    final donorURI =
+        'http://localhost:4000/api/donors/login';
+    final bloodBankURI =
+        'http://localhost:4000/api/bloodBanks/login';
+
     try {
-      final response = await http.post(
-        url,
+      // Try logging in as a donor first
+      final donorResponse = await http.post(
+        Uri.parse(donorURI),
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: json.encode({
           'email': email,
-          'password': password,
+          'password': password
         }),
       );
 
-      setState(() {
-        _isLoading = false;
-      });
-
-      if (response.statusCode == 200) {
+      if (donorResponse.statusCode == 200) {
+        final donorData = json.decode(donorResponse.body);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login Successful!')),
+          const SnackBar(content: Text('Login Successful as Donor!')),
         );
 
-        // Navigate to the home screen
+        // Navigate to Donor Home Screen
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
-      } else {
-        // If login fails, show an error message
-        final errorData = json.decode(response.body);
-        final errorMessage = errorData['error'] ?? 'Login Failed. Try Again!';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
-        );
+        return;
       }
+
+      // If donor login fails, try blood bank login
+      final bloodBankResponse = await http.post(
+        Uri.parse(bloodBankURI),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: json.encode({
+          'email': email,
+          'password': password
+        }),
+      );
+
+      if (bloodBankResponse.statusCode == 200) {
+        final bloodBankData = json.decode(bloodBankResponse.body);
+        final bloodBankId = bloodBankData['bloodBank']['_id'];
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login Successful as Blood Bank!')),
+        );
+
+        // Navigate to Blood Bank Home Screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BloodBank(bloodBankId: bloodBankId),
+          ),
+        );
+        return;
+      }
+
+      // If both logins fail, show an error
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid email or password')),
+      );
     } catch (error) {
-      // Handle any network or unexpected errors
       setState(() {
         _isLoading = false;
       });

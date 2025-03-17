@@ -24,22 +24,6 @@ class _UpdateBloodInventoryState
   late Map<
       String,
       dynamic> updatedValues;
-  final Map<String, String>
-      _units =
-      {
-    'wholeBlood':
-        'Pints',
-    'rbc':
-        'ml',
-    'wbc':
-        'ml',
-    'platelets':
-        'ml',
-    'plasma':
-        'ml',
-    'cryo':
-        'ml',
-  };
 
   @override
   void
@@ -57,24 +41,16 @@ class _UpdateBloodInventoryState
 
   Future<void>
       updateBloodInventory() async {
-    const String
+    String
+        id =
+        widget.bloodType['id'];
+    String
         url =
-        'http://localhost:4000/api/bloods/updateBlood';
-
-    String
-        bloodType =
-        widget.bloodType['bloodType'];
-    String
-        rhFactor =
-        widget.bloodType['rhFactor'];
-
-    print("Updating: Blood Type: $bloodType, Rh Factor: $rhFactor");
+        'http://localhost:4000/api/bloods/$id';
 
     final Map<String, dynamic>
         data =
         {
-      "bloodType": bloodType,
-      "rhFactor": rhFactor,
       "components": {
         "wholeBlood": _parseValue(updatedValues['wholeBlood']),
         "redBloodCells": _parseValue(updatedValues['rbc']),
@@ -86,13 +62,11 @@ class _UpdateBloodInventoryState
     };
 
     try {
-      final response = await http.patch(
-        Uri.parse(url),
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: json.encode(data),
-      );
+      final response = await http.patch(Uri.parse(url),
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: json.encode(data));
 
       if (response.statusCode == 200) {
         print("✅ Blood inventory updated successfully!");
@@ -111,39 +85,57 @@ class _UpdateBloodInventoryState
     return Scaffold(
       backgroundColor: MyColors.backgroundColor,
       appBar: AppBar(
-          title: Text(
-            'Update ${widget.bloodType['type']},',
-            style: const TextStyle(color: Colors.white),
-          ),
-          backgroundColor: MyColors.primaryColor),
-      body: Column(
-        children: [
-          for (String key in [
-            'wholeBlood',
-            'rbc',
-            'wbc',
-            'platelets',
-            'plasma',
-            'cryo'
-          ])
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(key.toUpperCase()),
-                IconButton(onPressed: () => setState(() => updatedValues[key] = '${_parseValue(updatedValues[key]) - 1} ${_units[key]}'), icon: const Icon(Icons.remove)),
-                Text('${updatedValues[key]}'),
-                IconButton(onPressed: () => setState(() => updatedValues[key] = '${_parseValue(updatedValues[key]) + 1} ${_units[key]}'), icon: const Icon(Icons.add)),
-              ],
+        title: const Text('Update Blood Inventory', style: TextStyle(color: Colors.white)),
+        backgroundColor: MyColors.primaryColor,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Text(
+              'Updating: ${widget.bloodType['type']}',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
             ),
-          ElevatedButton(
-            onPressed: updateBloodInventory,
-            style: ElevatedButton.styleFrom(backgroundColor: MyColors.primaryColor),
-            child: const Text(
-              "Save Changes",
-              style: TextStyle(color: Colors.white),
+            const SizedBox(height: 20),
+            _buildTextField('Whole Blood (Pints)', 'wholeBlood'),
+            _buildTextField('Red Blood Cells (ml)', 'rbc'),
+            _buildTextField('White Blood Cells (ml)', 'wbc'),
+            _buildTextField('Platelets (ml)', 'platelets'),
+            _buildTextField('Plasma (ml)', 'plasma'),
+            _buildTextField('Cryoprecipitate (ml)', 'cryo'),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: updateBloodInventory,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: MyColors.primaryColor,
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              child: const Text('Update Inventory', style: TextStyle(color: Colors.white)),
             ),
-          ),
-        ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(
+      String label,
+      String key) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextField(
+        keyboardType: TextInputType.number,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+        ),
+        onChanged: (value) {
+          setState(() {
+            updatedValues[key] = _parseValue(value);
+          });
+        },
+        controller: TextEditingController(text: updatedValues[key].toString()),
       ),
     );
   }

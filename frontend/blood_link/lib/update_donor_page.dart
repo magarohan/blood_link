@@ -151,7 +151,7 @@ class UpdateDonorPageState
                   ElevatedButton(
                     onPressed: updateDonor,
                     style: ElevatedButton.styleFrom(backgroundColor: MyColors.primaryColor),
-                    child: const Text('Update Donor'),
+                    child: const Text('Update Donor', style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),
