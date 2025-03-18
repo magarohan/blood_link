@@ -1,10 +1,116 @@
 import 'package:blood_link/themes/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart'
+    as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen
-    extends StatelessWidget {
+    extends StatefulWidget {
   const HomeScreen(
       {super.key});
+
+  @override
+  State<HomeScreen> createState() =>
+      _HomeScreenState();
+}
+
+class _HomeScreenState
+    extends State<HomeScreen> {
+  String?
+      donorName;
+  String?
+      donorBloodType;
+  String?
+      donorRhFactor;
+  bool
+      isLoading =
+      true;
+  List<Map<String, dynamic>>
+      bloodRequests =
+      [];
+
+  @override
+  void
+      initState() {
+    super.initState();
+    _loadDonorInfo();
+  }
+
+  Future<void>
+      _loadDonorInfo() async {
+    final prefs =
+        await SharedPreferences.getInstance();
+    final name =
+        prefs.getString('donorName');
+    final bloodType =
+        prefs.getString('donorBloodType');
+    final rhFactor =
+        prefs.getString('donorRhFactor');
+
+    if (name != null &&
+        bloodType != null &&
+        rhFactor != null) {
+      setState(() {
+        donorName = name;
+        donorBloodType = bloodType;
+        donorRhFactor = rhFactor;
+      });
+      _fetchMatchingBloodRequests(bloodType, rhFactor);
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No donor info found. Please log in again.')),
+      );
+    }
+  }
+
+  Future<void> _fetchMatchingBloodRequests(
+      String bloodType,
+      String rhFactor) async {
+    // Check the blood type and Rh factor
+
+    final url =
+        Uri.parse('http://localhost:4000/api/requests/search?bloodType=$bloodType&rhFactor=$rhFactor');
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data is List) {
+          setState(() {
+            bloodRequests = List<Map<String, dynamic>>.from(data);
+            isLoading = false;
+          });
+        } else {
+          setState(() {
+            isLoading = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No matching blood requests found.')),
+          );
+        }
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No matching blood requests found.')),
+        );
+      }
+    } catch (error) {
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('An error occurred while fetching requests.')),
+      );
+      print(error);
+    }
+  }
 
   @override
   Widget
@@ -12,142 +118,47 @@ class HomeScreen
     return Scaffold(
       backgroundColor: MyColors.backgroundColor,
       appBar: AppBar(
+        title: Text(
+          donorName != null ? 'Welcome, $donorName!' : 'Welcome!',
+          style: const TextStyle(color: Colors.white),
+        ),
         backgroundColor: MyColors.primaryColor,
-        elevation: 4,
-        title: Column(
-          children: [
-            const Text(
-              'Welcome',
-              style: TextStyle(color: Colors.white),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildFeatureCard(Icons.campaign, "Campaigns"),
-                _buildFeatureCard(Icons.history, "History"),
-              ],
-            ),
-          ],
-        ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(30),
-          ),
-        ),
-        toolbarHeight: 150,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  "Donation Requests",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : bloodRequests.isEmpty
+              ? const Center(child: Text('No matching blood requests found.'))
+              : ListView.builder(
+                  itemCount: bloodRequests.length,
+                  itemBuilder: (context, index) {
+                    final request = bloodRequests[index];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      elevation: 2,
+                      child: ListTile(
+                        title: Text('Requested by: ${request['name']}'),
+                        subtitle: Text('Location: ${request['location']}'),
+                        trailing: Text(
+                          '${request['bloodType']} ${request['rhFactor']}',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: MyColors.primaryColor),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-                TextButton(
-                  onPressed: () {},
-                  child: const Text(">"),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            _buildDonationCard("Ram Nepal", "TU Teaching Hospital, Kathmandu", "A+"),
-            const SizedBox(height: 10),
-            _buildDonationCard("Shyam Nepal", "Bhaktapur Hospital", "B+"),
-          ],
-        ),
-      ),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: MyColors.primaryColor,
         unselectedItemColor: Colors.grey,
         currentIndex: 0,
         onTap: (index) {
-          // Handle navigation
+          if (index == 1) {
+            Navigator.pushNamed(context, '/BloodBankList');
+          }
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFeatureCard(
-      IconData icon,
-      String title) {
-    return Container(
-      width: 150,
-      height: 100,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: MyColors.primaryColor),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: MyColors.primaryColor, size: 30),
-          const SizedBox(height: 10),
-          Text(title, style: TextStyle(color: MyColors.primaryColor)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDonationCard(
-      String name,
-      String location,
-      String bloodType) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: MyColors.primaryColor),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Name", style: TextStyle(color: Colors.grey[600])),
-                Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 10),
-                Text("Location", style: TextStyle(color: Colors.grey[600])),
-                Text(location, style: const TextStyle(fontWeight: FontWeight.bold)),
-              ],
-            ),
-          ),
-          Column(
-            children: [
-              CircleAvatar(
-                backgroundColor: MyColors.primaryColor,
-                radius: 25,
-                child: Text(
-                  bloodType,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextButton(
-                onPressed: () {},
-                child: Text(
-                  "Donate",
-                  style: TextStyle(color: MyColors.primaryColor),
-                ),
-              ),
-            ],
-          ),
         ],
       ),
     );

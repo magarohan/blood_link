@@ -10,10 +10,15 @@ const donorSchema = new Schema({
         required: [true, 'Full name is required'],
         trim: true,
     },
-    bloodGroup: {
+    bloodType: {
         type: String,
-        required: [true, 'Blood group is required'],
-        enum: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
+        required: [true, 'Blood type is required'],
+        enum: ['A', 'B', 'O', 'AB'],
+    },
+    rhFactor: {
+        type: String,
+        required: [true, 'RH factor is required'],
+        enum: ['+', '-'],
     },
     location: {
         type: String,
@@ -49,7 +54,7 @@ const donorSchema = new Schema({
 }, { timestamps: true });
 
 // Signup a donor
-donorSchema.statics.signup = async function (fullName, bloodGroup, location, email, phoneNumber, password) {
+donorSchema.statics.signup = async function (fullName, bloodType, rhFactor, location, email, phoneNumber, password) {
     const exists = await this.findOne({ email });
     if (exists) {
         throw Error('Email already in use');
@@ -60,7 +65,7 @@ donorSchema.statics.signup = async function (fullName, bloodGroup, location, ema
 
     const donor = await this.create({
         fullName,
-        bloodGroup,
+        bloodType, rhFactor,
         location,
         email,
         phoneNumber,

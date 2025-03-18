@@ -126,7 +126,7 @@ class _BloodBankState
                       PieChart(
                         dataMap: getPieChartData(),
                         chartRadius: MediaQuery.of(context).size.width / 2.5,
-                        colorList: [
+                        colorList: const [
                           Colors.red,
                           Colors.blue,
                           Colors.green,

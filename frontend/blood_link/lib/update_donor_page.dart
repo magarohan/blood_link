@@ -31,7 +31,10 @@ class UpdateDonorPageState
       _phoneController =
       TextEditingController();
   final TextEditingController
-      _bloodGroupController =
+      _bloodTypeController =
+      TextEditingController();
+  final TextEditingController
+      _rhFactorController =
       TextEditingController();
   final TextEditingController
       _locationController =
@@ -54,8 +57,10 @@ class UpdateDonorPageState
         widget.donor['email'];
     _phoneController.text =
         widget.donor['phoneNumber'];
-    _bloodGroupController.text =
-        widget.donor['bloodGroup'];
+    _bloodTypeController.text =
+        widget.donor['bloodType'];
+    _rhFactorController.text =
+        widget.donor['rhFactor'];
     _locationController.text =
         widget.donor['location'];
   }
@@ -84,7 +89,8 @@ class UpdateDonorPageState
       "fullName": _nameController.text,
       "email": _emailController.text,
       "phoneNumber": _phoneController.text,
-      "bloodGroup": _bloodGroupController.text,
+      "bloodType": _bloodTypeController.text,
+      "rhFactor": _rhFactorController.text,
       "location": _locationController.text,
     };
 
@@ -140,8 +146,12 @@ class UpdateDonorPageState
                     decoration: const InputDecoration(labelText: 'Phone Number'),
                   ),
                   TextField(
-                    controller: _bloodGroupController,
+                    controller: _bloodTypeController,
                     decoration: const InputDecoration(labelText: 'Blood Group'),
+                  ),
+                  TextField(
+                    controller: _rhFactorController,
+                    decoration: const InputDecoration(labelText: 'RH Factor'),
                   ),
                   TextField(
                     controller: _locationController,

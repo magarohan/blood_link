@@ -1,3 +1,4 @@
+import 'package:blood_link/add_request_page.dart';
 import 'package:blood_link/themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
@@ -25,7 +26,9 @@ class SignupScreenState
       TextEditingController();
   final _phoneController =
       TextEditingController();
-  final _bloodGroupController =
+  final _bloodTypeController =
+      TextEditingController();
+  final _rhFactorController =
       TextEditingController();
   final _locationController =
       TextEditingController();
@@ -40,8 +43,10 @@ class SignupScreenState
         _passwordController.text.trim();
     final phoneNumber =
         _phoneController.text.trim();
-    final bloodGroup =
-        _bloodGroupController.text.trim();
+    final bloodType =
+        _bloodTypeController.text.trim();
+    final rhFactor =
+        _rhFactorController.text.trim();
     final location =
         _locationController.text.trim();
 
@@ -49,7 +54,8 @@ class SignupScreenState
         email.isEmpty ||
         password.isEmpty ||
         phoneNumber.isEmpty ||
-        bloodGroup.isEmpty ||
+        bloodType.isEmpty ||
+        rhFactor.isEmpty ||
         location.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('All fields are required')),
@@ -75,7 +81,8 @@ class SignupScreenState
           'email': email,
           'password': password,
           'phoneNumber': phoneNumber,
-          'bloodGroup': bloodGroup,
+          'bloodType': bloodType,
+          'rhFactor': rhFactor,
           'location': location,
         }),
       );
@@ -163,7 +170,9 @@ class SignupScreenState
               const SizedBox(height: 10),
               _buildTextField(_phoneController, 'Phone Number'),
               const SizedBox(height: 10),
-              _buildTextField(_bloodGroupController, 'Blood Group'),
+              _buildTextField(_bloodTypeController, 'Blood Type'),
+              const SizedBox(height: 10),
+              _buildTextField(_rhFactorController, 'rhFactor'),
               const SizedBox(height: 10),
               _buildTextField(_locationController, 'Location'),
               const SizedBox(height: 20),

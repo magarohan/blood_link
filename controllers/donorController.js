@@ -41,10 +41,10 @@ const getDonor = async (req, res) => {
 
 // Signup donor
 const signupDonor = async (req, res) => {
-    const { fullName, bloodGroup, location, email, phoneNumber, password } = req.body;
+    const { fullName, bloodType,rhFactor, location, email, phoneNumber, password } = req.body;
 
     try {
-        const donor = await Donor.signup(fullName, bloodGroup, location, email, phoneNumber, password);
+        const donor = await Donor.signup(fullName, bloodType, rhFactor, location, email, phoneNumber, password);
 
         // Create token
         const token = createToken(donor._id);

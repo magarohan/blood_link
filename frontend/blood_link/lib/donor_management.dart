@@ -20,9 +20,6 @@ class DonorManagementPageState
   List<Map<String, dynamic>>
       donors =
       [];
-  Map<String, int>
-      bloodGroupCounts =
-      {}; // Stores count of each blood type
   bool
       isLoading =
       true;
@@ -53,17 +50,11 @@ class DonorManagementPageState
               "name": donor["fullName"] ?? "Unknown",
               "email": donor["email"] ?? "No email",
               "phoneNumber": donor["phoneNumber"] ?? "No phone",
-              "bloodGroup": donor["bloodGroup"] ?? "Unknown",
+              "bloodType": donor["bloodType"] ?? "Unknown",
+              "rhFactor": donor["rhFactor"] ?? "Unknown",
               "location": donor["location"] ?? "No location",
             };
           }).toList();
-
-          // Reset and count blood groups
-          bloodGroupCounts.clear();
-          for (var donor in donors) {
-            String bloodGroup = donor["bloodGroup"] ?? "Unknown";
-            bloodGroupCounts[bloodGroup] = (bloodGroupCounts[bloodGroup] ?? 0) + 1;
-          }
 
           isLoading = false;
         });
@@ -85,7 +76,7 @@ class DonorManagementPageState
       if (response.statusCode == 200) {
         setState(() {
           donors.removeWhere((donor) => donor["id"] == id);
-          fetchDonors(); // Refresh the blood group counts
+          fetchDonors();
         });
       } else {
         throw Exception('Failed to delete donor');
@@ -112,20 +103,6 @@ class DonorManagementPageState
               ? Center(child: Text(errorMessage, style: TextStyle(color: MyColors.primaryColor)))
               : Column(
                   children: [
-                    // Blood Group Count Summary
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: bloodGroupCounts.entries.map((entry) {
-                          return Text(
-                            "${entry.key}: ${entry.value} donors",
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-
                     // Donor List
                     Expanded(
                       child: ListView.builder(
@@ -162,7 +139,8 @@ class DonorManagementPageState
           children: [
             Text("Email: ${donor["email"]}"),
             Text("Phone: ${donor["phoneNumber"]}"),
-            Text("Blood Group: ${donor["bloodGroup"]}"),
+            Text("Blood Type: ${donor["bloodType"]}"),
+            Text("RH Factor: ${donor["rhFactor"]}"),
             Text("Location: ${donor["location"]}"),
           ],
         ),
