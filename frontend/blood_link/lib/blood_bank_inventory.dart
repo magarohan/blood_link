@@ -1,4 +1,5 @@
 import 'package:blood_link/themes/colors.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
@@ -38,9 +39,9 @@ class _BloodBankState
   // Fetch blood inventory of a specific blood bank
   Future<void>
       fetchBloodInventory() async {
-    String
-        url =
-        'http://localhost:4000/api/bloods/bank/${widget.bloodBankId}';
+    String url = kIsWeb
+        ? 'http://localhost:4000/api/bloods/bank/${widget.bloodBankId}'
+        : 'http://10.0.2.2:4000/api/bloods/bank/${widget.bloodBankId}';
 
     try {
       final response = await http.get(Uri.parse(url));

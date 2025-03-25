@@ -1,4 +1,5 @@
 import 'package:blood_link/themes/colors.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
@@ -35,9 +36,9 @@ class BloodRequestsPageState
 
   Future<void>
       fetchBloodRequests() async {
-    const String
-        url =
-        'http://localhost:4000/api/requests';
+    const String url = kIsWeb
+        ? 'http://localhost:4000/api/requests'
+        : 'http://10.0.2.2:4000/api/requests';
 
     try {
       final response = await http.get(Uri.parse(url));

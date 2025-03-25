@@ -1,4 +1,5 @@
 import 'package:blood_link/themes/colors.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
@@ -43,9 +44,9 @@ class UpdateDonorPageState
       isLoading =
       false;
 
-  String
-      baseUrl =
-      'http://localhost:4000/api/donors/update/';
+  String baseUrl = kIsWeb
+      ? 'http://localhost:4000/api/donors/update/'
+      : 'http://10.0.2.2:4000/api/donors/update/';
 
   @override
   void

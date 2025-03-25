@@ -4,6 +4,7 @@ import 'package:http/http.dart'
 import 'dart:convert';
 import 'update_hospital_inventory.dart';
 import 'package:blood_link/themes/colors.dart';
+import 'package:flutter/foundation.dart';
 
 class AdminHome
     extends StatefulWidget {
@@ -33,9 +34,9 @@ class _AdminHomeState
 
   Future<void>
       fetchBloodInventory() async {
-    const String
-        url =
-        'http://localhost:4000/api/hospitalBloods/';
+    const String url = kIsWeb
+        ? 'http://localhost:4000/api/hospitalBloods/'
+        : 'http://10.0.2.2:4000/api/hospitalBloods/';
 
     try {
       final response = await http.get(Uri.parse(url));

@@ -1,4 +1,5 @@
 import 'package:blood_link/themes/colors.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
@@ -72,8 +73,9 @@ class _HomeScreenState
       String rhFactor) async {
     // Check the blood type and Rh factor
 
-    final url =
-        Uri.parse('http://localhost:4000/api/requests/search?bloodType=$bloodType&rhFactor=$rhFactor');
+    final url = kIsWeb
+        ? Uri.parse('http://localhost:4000/api/requests/search?bloodType=$bloodType&rhFactor=$rhFactor')
+        : Uri.parse('http://10.0.2.2:4000/api/requests/search?bloodType=$bloodType&rhFactor=$rhFactor');
 
     try {
       final response = await http.get(url);

@@ -1,4 +1,5 @@
 import 'package:blood_link/themes/colors.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
@@ -66,9 +67,9 @@ class SignupScreenState
       _isLoading = true;
     });
 
-    final url =
-        // Uri.parse('http://10.0.2.2:4000/api/donors/signup');
-        Uri.parse('http://localhost:4000/api/donors/signup');
+    final url = kIsWeb
+        ? Uri.parse('http://localhost:4000/api/donors/signup')
+        : Uri.parse('http://10.0.2.2:4000/api/donors/signup');
     try {
       final response = await http.post(
         url,

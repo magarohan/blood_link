@@ -3,6 +3,7 @@ import 'package:http/http.dart'
     as http;
 import 'dart:convert';
 import 'package:blood_link/themes/colors.dart';
+import 'package:flutter/foundation.dart'; //
 
 const List<String>
     rhFactors =
@@ -84,9 +85,10 @@ class AddRequestState
 
   Future<void>
       _addRequest() async {
-    const String
-        url =
-        'http://localhost:4000/api/requests';
+    // Dynamically choose the correct URL
+    const String url = kIsWeb
+        ? 'http://localhost:4000/api/requests' // Web URL
+        : 'http://10.0.2.2:4000/api/requests'; // Android Emulator URL
 
     if (_selectedBloodType == null ||
         _selectedRhFactor == null) {

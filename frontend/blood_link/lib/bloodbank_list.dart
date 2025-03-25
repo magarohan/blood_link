@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
@@ -33,9 +34,9 @@ class _BloodBankListState
 
   Future<void>
       fetchBloodBanks() async {
-    const String
-        url =
-        'http://localhost:4000/api/bloodBanks';
+    const String url = kIsWeb
+        ? 'http://localhost:4000/api/bloodBanks'
+        : 'http://10.0.2.2:4000/api/bloodBanks';
 
     try {
       final response = await http.get(Uri.parse(url));

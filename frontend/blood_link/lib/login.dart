@@ -1,6 +1,7 @@
 import 'package:blood_link/admin_home.dart';
 import 'package:blood_link/blood_bank.dart';
 import 'package:blood_link/themes/colors.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'home.dart';
@@ -58,10 +59,12 @@ class _LoginScreenState
       _isLoading = true;
     });
 
-    const donorURI =
-        'http://localhost:4000/api/donors/login';
-    const bloodBankURI =
-        'http://localhost:4000/api/bloodBanks/login';
+    const donorURI = kIsWeb
+        ? 'http://localhost:4000/api/donors/login'
+        : 'http://10.0.2.2:4000/api/donors/login';
+    const bloodBankURI = kIsWeb
+        ? 'http://localhost:4000/api/bloodBanks/login'
+        : 'http://10.0.2.2:4000/api/bloodBanks/login';
 
     try {
       // Try logging in as a donor

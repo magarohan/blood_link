@@ -9,37 +9,37 @@ const bloodSchema = new mongoose.Schema({
   bloodType: {
     type: String,
     required: true,
-    enum: ["A", "B", "AB", "O"], // Valid blood groups
+    enum: ["A", "B", "AB", "O"],
   },
   rhFactor: {
     type: String,
     required: true,
-    enum: ["+", "-"], // Positive or Negative
+    enum: ["+", "-"], 
   },
   components: {
     wholeBlood: {
       type: Number,
-      default: 0, // Units of whole blood available
+      default: 0, 
     },
     redBloodCells: {
       type: Number,
-      default: 0, // Units of RBCs available
+      default: 0, 
     },
     whiteBloodCells: {
       type: Number,
-      default: 0, // Units of WBCs available
+      default: 0,
     },
     platelets: {
       type: Number,
-      default: 0, // Units of platelets available
+      default: 0,
     },
     plasma: {
       type: Number,
-      default: 0, // Units of plasma available
+      default: 0, 
     },
     cryoprecipitate: {
       type: Number,
-      default: 0, // Units of cryoprecipitate available
+      default: 0, 
     },
   },
   // donations: [
@@ -70,7 +70,7 @@ const bloodSchema = new mongoose.Schema({
   // ],
   createdAt: {
     type: Date,
-    default: Date.now, // Record creation date
+    default: Date.now, 
   },
 });
 
