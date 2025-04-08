@@ -10,6 +10,8 @@ import 'package:blood_link/blood_bank.dart';
 import 'package:blood_link/add_request_page.dart';
 import 'package:blood_link/update_donor_page.dart';
 import 'package:blood_link/bloodbank_list.dart';
+import 'package:blood_link/profile.dart';
+import 'package:blood_link/home.dart';
 
 void
     main() {
@@ -52,6 +54,8 @@ class MyApp
           return UpdateDonorPage(donor: donor);
         },
         '/BloodBankList': (context) => const BloodBankList(),
+        '/Profile': (context) => const ProfilePage(),
+        '/Home': (context) => const HomeScreen(),
       },
     );
   }

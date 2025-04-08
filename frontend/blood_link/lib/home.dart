@@ -155,12 +155,17 @@ class _HomeScreenState
         onTap: (index) {
           if (index == 1) {
             Navigator.pushNamed(context, '/BloodBankList');
+          } else if (index == 2) {
+            Navigator.pushNamed(context, '/Profile');
           }
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: "Profile",
+          ),
         ],
       ),
     );
