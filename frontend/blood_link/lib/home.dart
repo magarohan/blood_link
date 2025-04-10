@@ -71,8 +71,6 @@ class _HomeScreenState
   Future<void> _fetchMatchingBloodRequests(
       String bloodType,
       String rhFactor) async {
-    // Check the blood type and Rh factor
-
     final url = kIsWeb
         ? Uri.parse('http://localhost:4000/api/requests/search?bloodType=$bloodType&rhFactor=$rhFactor')
         : Uri.parse('http://10.0.2.2:4000/api/requests/search?bloodType=$bloodType&rhFactor=$rhFactor');

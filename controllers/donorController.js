@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Donor = require('../models/donorModel');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 // Helper function to create a token
 const createToken = (_id) => {
@@ -103,6 +104,11 @@ const updateDonor = async (req, res) => {
     }
 
     const updates = req.body;
+
+    if (updates.password) {
+        const salt = await bcrypt.genSalt(10);
+        updates.password = await bcrypt.hash(updates.password, salt);
+    }
 
     try {
         const updatedDonor = await Donor.findByIdAndUpdate(id, updates, { new: true, runValidators: true });

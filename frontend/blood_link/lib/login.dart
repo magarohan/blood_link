@@ -67,7 +67,6 @@ class _LoginScreenState
         : 'http://10.0.2.2:4000/api/bloodBanks/login';
 
     try {
-      // Try logging in as a donor
       final donorResponse = await http.post(
         Uri.parse(donorURI),
         headers: {
@@ -81,16 +80,17 @@ class _LoginScreenState
 
       if (donorResponse.statusCode == 200) {
         final donorData = json.decode(donorResponse.body);
-
         if (donorData != null && donorData.containsKey('donor')) {
           final donor = donorData['donor'];
           final token = donorData['token'];
 
           final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('donorId', donor['_id'] ?? '');
           await prefs.setString('donorName', donor['fullName'] ?? '');
           await prefs.setString('donorBloodType', donor['bloodType'] ?? '');
           await prefs.setString('donorRhFactor', donor['rhFactor'] ?? '');
           await prefs.setString('donorEmail', donor['email'] ?? '');
+          await prefs.setString('donorLocation', donor['location'] ?? '');
           await prefs.setString('donorToken', token ?? ''); // Save token for authentication
 
           ScaffoldMessenger.of(context).showSnackBar(
@@ -105,7 +105,6 @@ class _LoginScreenState
         }
       }
 
-      // Try blood bank login if donor login fails
       final bloodBankResponse = await http.post(
         Uri.parse(bloodBankURI),
         headers: {
