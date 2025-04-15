@@ -192,15 +192,15 @@ class _LoginScreenState
                       ),
                     ),
               const SizedBox(height: 10),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SignupScreen()),
-                  );
-                },
-                child: const Text('Register Now'),
-              ),
+              // TextButton(
+              //   onPressed: () {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(builder: (context) => const SignupScreen()),
+              //     );
+              //   },
+              //   child: const Text('Register Now'),
+              // ),
             ],
           ),
         ),
