@@ -56,6 +56,7 @@ class MyApp
         '/BloodBankList': (context) => const BloodBankList(),
         '/Profile': (context) => const ProfilePage(),
         '/Home': (context) => const HomeScreen(),
+        '/Login': (context) => const LoginScreen(),
       },
     );
   }

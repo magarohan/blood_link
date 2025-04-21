@@ -1,3 +1,4 @@
+import 'package:blood_link/login.dart';
 import 'package:blood_link/themes/colors.dart';
 import 'package:blood_link/update_blood_inventory.dart';
 import 'package:flutter/foundation.dart';
@@ -6,6 +7,7 @@ import 'package:http/http.dart'
     as http;
 import 'dart:convert';
 import 'package:pie_chart/pie_chart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BloodBank
     extends StatefulWidget {
@@ -34,7 +36,29 @@ class _BloodBankState
   void
       initState() {
     super.initState();
-    fetchBloodInventory();
+    _checkLoginStatus();
+  }
+
+  Future<void>
+      _checkLoginStatus() async {
+    final prefs =
+        await SharedPreferences.getInstance();
+    final token =
+        prefs.getString('bloodBankToken');
+
+    if (token == null ||
+        token.isEmpty) {
+      // No token, redirect to login
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      }
+    } else {
+      // Token exists, fetch data
+      fetchBloodInventory();
+    }
   }
 
   Future<void>
@@ -56,7 +80,7 @@ class _BloodBankState
         setState(() {
           bloodInventory = data.map((item) {
             return {
-              'id': item['_id'], // ✅ Ensure the ID is included
+              'id': item['_id'],
               'type': '${item['bloodType']}${item['rhFactor']}',
               'bloodType': item['bloodType'],
               'rhFactor': item['rhFactor'],
@@ -102,6 +126,20 @@ class _BloodBankState
         : dataMap;
   }
 
+  Future<void>
+      _logout() async {
+    final prefs =
+        await SharedPreferences.getInstance();
+    await prefs.clear();
+
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    }
+  }
+
   @override
   Widget
       build(BuildContext context) {
@@ -110,6 +148,13 @@ class _BloodBankState
       appBar: AppBar(
         title: const Text('Blood Inventory', style: TextStyle(color: Colors.white)),
         backgroundColor: MyColors.primaryColor,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white),
+            onPressed: _logout,
+            tooltip: 'Logout',
+          ),
+        ],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -135,8 +180,14 @@ class _BloodBankState
                           Colors.purple,
                           Colors.yellow
                         ],
-                        legendOptions: const LegendOptions(showLegendsInRow: false, legendPosition: LegendPosition.right),
-                        chartValuesOptions: const ChartValuesOptions(showChartValuesInPercentage: true, showChartValuesOutside: true),
+                        legendOptions: const LegendOptions(
+                          showLegendsInRow: false,
+                          legendPosition: LegendPosition.right,
+                        ),
+                        chartValuesOptions: const ChartValuesOptions(
+                          showChartValuesInPercentage: true,
+                          showChartValuesOutside: true,
+                        ),
                       ),
                       const SizedBox(height: 20),
                       ListView.builder(
@@ -154,7 +205,12 @@ class _BloodBankState
                               border: Border.all(color: Colors.red),
                               borderRadius: BorderRadius.circular(10),
                               boxShadow: [
-                                BoxShadow(color: Colors.grey.withOpacity(0.2), spreadRadius: 2, blurRadius: 5, offset: const Offset(0, 3))
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.2),
+                                  spreadRadius: 2,
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 3),
+                                )
                               ],
                             ),
                             child: Column(
@@ -162,7 +218,11 @@ class _BloodBankState
                               children: [
                                 Text(
                                   bloodType['type'] ?? 'N/A',
-                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red,
+                                  ),
                                 ),
                                 const SizedBox(height: 10),
                                 Text('Whole Blood: ${bloodType['wholeBlood']} Pints'),
@@ -181,7 +241,12 @@ class _BloodBankState
                                       ),
                                     ).then((_) => fetchBloodInventory());
                                   },
-                                  style: ElevatedButton.styleFrom(backgroundColor: MyColors.primaryColor, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: MyColors.primaryColor,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
                                   child: const Text('Update', style: TextStyle(color: Colors.white)),
                                 ),
                               ],

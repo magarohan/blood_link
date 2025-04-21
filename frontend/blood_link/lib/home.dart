@@ -5,6 +5,7 @@ import 'package:http/http.dart'
     as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'login.dart'; // <-- Make sure this is the correct path
 
 class HomeScreen
     extends StatefulWidget {
@@ -35,7 +36,27 @@ class _HomeScreenState
   void
       initState() {
     super.initState();
-    _loadDonorInfo();
+    _checkLoginStatus();
+  }
+
+  Future<void>
+      _checkLoginStatus() async {
+    final prefs =
+        await SharedPreferences.getInstance();
+    final token =
+        prefs.getString('donorToken');
+
+    if (token != null &&
+        token.isNotEmpty) {
+      _loadDonorInfo();
+    } else {
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      }
+    }
   }
 
   Future<void>
@@ -112,9 +133,29 @@ class _HomeScreenState
     }
   }
 
+  Future<void>
+      _logout() async {
+    final prefs =
+        await SharedPreferences.getInstance();
+    await prefs.clear();
+
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    }
+  }
+
   @override
   Widget
       build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       backgroundColor: MyColors.backgroundColor,
       appBar: AppBar(
@@ -123,29 +164,38 @@ class _HomeScreenState
           style: const TextStyle(color: Colors.white),
         ),
         backgroundColor: MyColors.primaryColor,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white),
+            onPressed: _logout,
+            tooltip: 'Logout',
+          ),
+        ],
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : bloodRequests.isEmpty
-              ? const Center(child: Text('No matching blood requests found.'))
-              : ListView.builder(
-                  itemCount: bloodRequests.length,
-                  itemBuilder: (context, index) {
-                    final request = bloodRequests[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                      elevation: 2,
-                      child: ListTile(
-                        title: Text('Requested by: ${request['name']}'),
-                        subtitle: Text('Location: ${request['location']}'),
-                        trailing: Text(
-                          '${request['bloodType']} ${request['rhFactor']}',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: MyColors.primaryColor),
-                        ),
+      body: bloodRequests.isEmpty
+          ? const Center(child: Text('No matching blood requests found.'))
+          : ListView.builder(
+              itemCount: bloodRequests.length,
+              itemBuilder: (context, index) {
+                final request = bloodRequests[index];
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  elevation: 2,
+                  child: ListTile(
+                    title: Text('Requested by: ${request['name']}'),
+                    subtitle: Text('Location: ${request['location']}'),
+                    trailing: Text(
+                      '${request['bloodType']} ${request['rhFactor']}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: MyColors.primaryColor,
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  ),
+                );
+              },
+            ),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: MyColors.primaryColor,
         unselectedItemColor: Colors.grey,
@@ -160,10 +210,7 @@ class _HomeScreenState
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: "Profile",
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
         ],
       ),
     );

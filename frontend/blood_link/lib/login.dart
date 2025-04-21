@@ -1,14 +1,13 @@
 import 'package:blood_link/admin_home.dart';
 import 'package:blood_link/blood_bank.dart';
+import 'package:blood_link/home.dart';
 import 'package:blood_link/themes/colors.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'home.dart';
-import 'signup.dart';
 import 'package:http/http.dart'
     as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen
     extends StatefulWidget {
@@ -31,6 +30,45 @@ class _LoginScreenState
   bool
       _isLoading =
       false;
+  bool
+      _checkingLogin =
+      true;
+
+  @override
+  void
+      initState() {
+    super.initState();
+    _checkIfAlreadyLoggedIn();
+  }
+
+  Future<void>
+      _checkIfAlreadyLoggedIn() async {
+    final prefs =
+        await SharedPreferences.getInstance();
+    final donorToken =
+        prefs.getString('donorToken');
+    final bloodBankToken =
+        prefs.getString('bloodBankToken');
+
+    if (donorToken != null &&
+        donorToken.isNotEmpty) {
+      // Already logged in as Donor
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else if (bloodBankToken != null && bloodBankToken.isNotEmpty) {
+      // Already logged in as Blood Bank
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => BloodBank(bloodBankId: prefs.getString('bloodBankId') ?? '')),
+      );
+    } else {
+      setState(() {
+        _checkingLogin = false;
+      });
+    }
+  }
 
   Future<void>
       _login() async {
@@ -47,12 +85,14 @@ class _LoginScreenState
       return;
     }
 
-    if (email == "admin" ||
+    // Admin shortcut
+    if (email == "admin" &&
         password == "admin") {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const AdminHome()),
       );
+      return;
     }
 
     setState(() {
@@ -67,14 +107,15 @@ class _LoginScreenState
         : 'http://10.0.2.2:4000/api/bloodBanks/login';
 
     try {
+      // Try donor login
       final donorResponse = await http.post(
         Uri.parse(donorURI),
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: json.encode({
           'email': email,
-          'password': password,
+          'password': password
         }),
       );
 
@@ -91,7 +132,7 @@ class _LoginScreenState
           await prefs.setString('donorRhFactor', donor['rhFactor'] ?? '');
           await prefs.setString('donorEmail', donor['email'] ?? '');
           await prefs.setString('donorLocation', donor['location'] ?? '');
-          await prefs.setString('donorToken', token ?? ''); // Save token for authentication
+          await prefs.setString('donorToken', token ?? '');
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Login Successful as Donor!')),
@@ -105,19 +146,23 @@ class _LoginScreenState
         }
       }
 
+      // Try blood bank login
       final bloodBankResponse = await http.post(
         Uri.parse(bloodBankURI),
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: json.encode({
           'email': email,
-          'password': password,
+          'password': password
         }),
       );
 
       if (bloodBankResponse.statusCode == 200) {
         final bloodBankData = json.decode(bloodBankResponse.body);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('bloodBankToken', bloodBankData['token']);
+        await prefs.setString('bloodBankId', bloodBankData['bloodBank']['_id']);
         final bloodBankId = bloodBankData['bloodBank']['_id'];
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -153,6 +198,12 @@ class _LoginScreenState
   @override
   Widget
       build(BuildContext context) {
+    if (_checkingLogin) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       backgroundColor: MyColors.backgroundColor,
       body: SingleChildScrollView(
@@ -191,16 +242,6 @@ class _LoginScreenState
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
-              const SizedBox(height: 10),
-              // TextButton(
-              //   onPressed: () {
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(builder: (context) => const SignupScreen()),
-              //     );
-              //   },
-              //   child: const Text('Register Now'),
-              // ),
             ],
           ),
         ),
