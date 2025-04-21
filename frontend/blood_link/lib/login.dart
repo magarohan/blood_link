@@ -80,7 +80,7 @@ class _LoginScreenState
     if (email.isEmpty ||
         password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Email and Password are required')),
+        const SnackBar(content: Text('Both Email and Password are required')),
       );
       return;
     }
