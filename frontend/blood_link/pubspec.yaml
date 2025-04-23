@@ -37,6 +37,7 @@ dependencies:
   charts_flutter_new: ^0.12.0
   pie_chart: ^5.4.0
   shared_preferences: ^2.3.3
+  google_maps_flutter: ^2.10.1
 
 dev_dependencies:
   flutter_test:

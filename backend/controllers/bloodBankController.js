@@ -8,7 +8,7 @@ const createToken = (id) => {
 // Get all blood banks
 const getAllBloodBanks = async (req, res) => {
     try {
-        const bloodBanks = await BloodBank.find({}, "-password"); // Exclude password
+        const bloodBanks = await BloodBank.find({}, "-password");
         res.status(200).json(bloodBanks);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -17,10 +17,10 @@ const getAllBloodBanks = async (req, res) => {
 
 // Register a new blood bank
 const addBloodBank = async (req, res) => {
-    const { name, location, contact, email, password } = req.body;
+    const { name, address, lalitude, longitude, contact, email, password } = req.body;
 
     try {
-        const newBloodBank = await BloodBank.signup(name, location, contact, email, password);
+        const newBloodBank = await BloodBank.signup(name, address, lalitude, longitude, contact, email, password );
         const token = createToken(newBloodBank._id);
         res.status(201).json({ bloodBank: newBloodBank, token });
     } catch (error) {

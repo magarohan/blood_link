@@ -4,7 +4,8 @@ import 'package:http/http.dart'
     as http;
 import 'dart:convert';
 import 'package:blood_link/themes/colors.dart';
-import 'package:blood_link/blood_bank_inventory.dart'; // Ensure this is the correct import
+import 'package:blood_link/blood_bank_inventory.dart';
+import 'package:blood_link/map_page.dart';
 
 class BloodBankList
     extends StatefulWidget {
@@ -48,8 +49,10 @@ class _BloodBankListState
             return {
               'id': item['_id'],
               'name': item['name'],
-              'location': item['location'],
+              'address': item['address'],
               'contact': item['contact'],
+              'latitude': item['latitude'] is String ? double.tryParse(item['latitude']) : (item['latitude']?.toDouble() ?? 0.0),
+              'longitude': item['longitude'] is String ? double.tryParse(item['longitude']) : (item['longitude']?.toDouble() ?? 0.0),
             };
           }).toList();
           isLoading = false;
@@ -118,24 +121,56 @@ class _BloodBankListState
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: MyColors.primaryColor),
           ),
           const SizedBox(height: 5),
-          Text('Location: ${bloodBank['location']}'),
+          Text('Address: ${bloodBank['address']}'),
           Text('Contact: ${bloodBank['contact']}'),
           const SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () {
-              // Navigate to Blood Inventory Page for the selected blood bank
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => BloodBank(bloodBankId: bloodBank['id']), // Pass bloodBankId
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BloodBank(bloodBankId: bloodBank['id']),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: MyColors.primaryColor,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: MyColors.primaryColor,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-            child: const Text('View Inventory', style: TextStyle(color: Colors.white)),
+                child: const Text('View Inventory', style: TextStyle(color: Colors.white)),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  double? lat = bloodBank['latitude'];
+                  double? lng = bloodBank['longitude'];
+
+                  if (lat != null && lng != null && lat != 0.0 && lng != 0.0) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MapPage(
+                          name: bloodBank['name'],
+                          latitude: lat,
+                          longitude: lng,
+                        ),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Invalid location data')),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                child: const Text('View Location', style: TextStyle(color: Colors.white)),
+              ),
+            ],
           ),
         ],
       ),

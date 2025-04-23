@@ -4,7 +4,9 @@ const validator = require('validator');
 
 const bloodBankSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  location: { type: String, required: true },
+  address: { type: String, required: true },
+  latitude: { type: String, required: false },
+  longitude: { type: String, required: false },
   contact: { type: String, required: true },
   email: { type: String, required: true, unique: true, lowercase: true },
   password: { type: String, required: true },
