@@ -1,6 +1,8 @@
+import 'package:blood_link/login.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'update_hospital_inventory.dart';
 import 'package:blood_link/themes/colors.dart';
@@ -70,6 +72,20 @@ class _AdminHomeState
     }
   }
 
+  Future<void>
+      _logout() async {
+    final prefs =
+        await SharedPreferences.getInstance();
+    await prefs.clear();
+
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    }
+  }
+
   @override
   Widget
       build(BuildContext context) {
@@ -132,12 +148,14 @@ class _AdminHomeState
         onTap: (index) {
           if (index == 1) {
             Navigator.pushNamed(context, '/BloodBankList');
+          } else if (index == 2) {
+            _logout();
           }
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
+          BottomNavigationBarItem(icon: Icon(Icons.logout), label: "Logout"),
         ],
       ),
     );

@@ -50,15 +50,16 @@ class _LoginScreenState
     final bloodBankToken =
         prefs.getString('bloodBankToken');
 
+    print('donorToken: $donorToken');
+    print('bloodBankToken: $bloodBankToken');
+
     if (donorToken != null &&
         donorToken.isNotEmpty) {
-      // Already logged in as Donor
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
     } else if (bloodBankToken != null && bloodBankToken.isNotEmpty) {
-      // Already logged in as Blood Bank
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => BloodBank(bloodBankId: prefs.getString('bloodBankId') ?? '')),
