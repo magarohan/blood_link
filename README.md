@@ -1,87 +1,79 @@
-Blood Link
-Blood Link is a Flutter-based Blood Management System designed to connect blood donors, recipients, and blood banks efficiently. The application aims to simplify the process of finding and managing blood supplies, ensuring that blood is always available when urgently needed.
+# Blood Link
 
-Features
-🏥 Manage Multiple Blood Banks
+Blood Link is a **Flutter-based Blood Management System** designed to connect blood donors, recipients, and blood banks efficiently. The application aims to simplify the process of finding and managing blood supplies, ensuring that blood is always available when urgently needed.
 
-🩸 Track Blood Inventory for each blood bank
+## Features
 
-🙋 User Registration and Login (for both donors and blood banks)
+- 🏥 **Manage Multiple Blood Banks**  
+- 🩸 **Track Blood Inventory** for each blood bank
+- 🙋 **User Registration and Login** (for both donors and blood banks)
+- 🛡️ **Secure Authentication** with token-based auto-login
+- 👤 **Editable User Profiles** (with data saving to database and SharedPreferences)
+- 📊 **Pie Chart Visualization** of available blood types (`pie_chart` package)
+- ☁️ **Cloud-hosted Backend** (Node.js)
+- 🔎 **Search and List Blood Banks** near users
 
-🛡️ Secure Authentication with token-based auto-login
+## Tech Stack
 
-👤 Editable User Profiles (with data saving to database and SharedPreferences)
+- **Frontend**: Flutter (Dart)
+- **Backend**: Node.js (Express.js)
+- **Database**: MongoDB
+- **State Management**: Provider
+- **Local Storage**: SharedPreferences
+- **Cloud Hosting**: TBD (Coming Soon)
 
-📊 Pie Chart Visualization of available blood types (pie_chart package)
+## Setup Instructions
 
-☁️ Cloud-hosted Backend (Node.js)
+### Prerequisites
 
-🔎 Search and List Blood Banks near users
+- Flutter SDK installed (Stable Channel)
+- Node.js and npm installed
+- MongoDB instance (local or cloud)
 
-Tech Stack
-Frontend: Flutter (Dart)
+### Flutter App
 
-Backend: Node.js (Express.js)
+1. Clone the repo:
 
-Database: MongoDB
+    ```bash
+    git clone https://github.com/magarohan/blood_link.git
+    cd blood_link
+    ```
 
-State Management: Provider
+2. Install dependencies:
 
-Local Storage: SharedPreferences
+    ```bash
+    flutter pub get
+    ```
 
-Cloud Hosting: TBD (Coming Soon)
+3. Run the app:
 
-Setup Instructions
-Prerequisites
-Flutter SDK installed (Stable Channel)
+    ```bash
+    flutter run
+    ```
 
-Node.js and npm installed
+> Make sure a simulator/emulator or physical device is connected.
 
-MongoDB instance (local or cloud)
+### Backend (Optional for Full Functionality)
 
-Flutter App
-Clone the repo:
+1. Navigate to your backend directory (if available).
 
-bash
-Copy
-Edit
-git clone https://github.com/magarohan/blood_link.git
-cd blood_link
-Install dependencies:
+2. Install server dependencies:
 
-bash
-Copy
-Edit
-flutter pub get
-Run the app:
+    ```bash
+    npm install
+    ```
 
-bash
-Copy
-Edit
-flutter run
-Make sure a simulator/emulator or physical device is connected.
+3. Run the server:
 
-Backend (Optional for Full Functionality)
-Navigate to your backend directory (if available).
+    ```bash
+    npm start
+    ```
 
-Install server dependencies:
+4. Update the API URLs in your Flutter app if necessary.
 
-bash
-Copy
-Edit
-npm install
-Run the server:
+## Project Structure
 
-bash
-Copy
-Edit
-npm start
-Update the API URLs in your Flutter app if necessary.
-
-Project Structure
-bash
-Copy
-Edit
+```bash
 /lib
   /screens
     bloodBankList.dart
@@ -97,6 +89,3 @@ Edit
     blood_bank.dart
 /assets
   /images
-Contributions
-Contributions, issues, and feature requests are welcome!
-Feel free to fork the repo and submit a pull request.
