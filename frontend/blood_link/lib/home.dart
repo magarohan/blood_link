@@ -3,9 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
+import 'package:khalti_flutter/khalti_flutter.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'login.dart'; // <-- Make sure this is the correct path
+import 'login.dart';
 
 class HomeScreen
     extends StatefulWidget {
@@ -147,6 +148,67 @@ class _HomeScreenState
     }
   }
 
+  void
+      donateWithKhalti() {
+    KhaltiScope.of(context).pay(
+      config: PaymentConfig(
+        amount: 10000, // in paisa (Rs. 100 = 10000)
+        productIdentity: 'donation-001',
+        productName: 'Donation',
+      ),
+      preferences: [
+        PaymentPreference.khalti, // Only enable Khalti wallet
+      ],
+      onSuccess: onSuccess,
+      onFailure: onFailure,
+      onCancel: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Payment Cancelled")),
+        );
+      },
+    );
+  }
+
+  void onSuccess(
+      PaymentSuccessModel success) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: const Text("Donation Successful"),
+          actions: [
+            SimpleDialogOption(
+              child: const Text("Okay"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  void onFailure(
+      PaymentFailureModel failure) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: const Text("Donation Failed"),
+          actions: [
+            SimpleDialogOption(
+              child: const Text("Okay"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget
       build(BuildContext context) {
@@ -196,6 +258,12 @@ class _HomeScreenState
                 );
               },
             ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: donateWithKhalti,
+        label: const Text('Donate'),
+        icon: const Icon(Icons.favorite),
+        backgroundColor: MyColors.primaryColor,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: MyColors.primaryColor,
         unselectedItemColor: Colors.grey,
