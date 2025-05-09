@@ -1,19 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:blood_link/login.dart';
-import 'package:blood_link/signup.dart';
-import 'package:blood_link/admin_home.dart';
-import 'package:blood_link/blood_request_page.dart';
-import 'package:blood_link/donor_management.dart';
-import 'package:blood_link/staff_managent.dart';
-import 'package:blood_link/update_blood_inventory.dart';
-import 'package:blood_link/blood_bank.dart';
-import 'package:blood_link/add_request_page.dart';
-import 'package:blood_link/update_donor_page.dart';
-import 'package:blood_link/bloodbank_list.dart';
-import 'package:blood_link/profile.dart';
-import 'package:blood_link/home.dart';
 import 'package:khalti_flutter/khalti_flutter.dart';
-import 'package:khalti_flutter/localization/khalti_localizations.dart';
 
 void
     main() {
@@ -30,46 +16,85 @@ class MyApp
   Widget
       build(BuildContext context) {
     return KhaltiScope(
-      publicKey: '522847f5cd004762b4fae02be75f6920',
+      publicKey: 'test_public_key_30e12814fed64afa9a7d4a92a2194aeb',
       enabledDebugging: true,
-      builder: (contex, navKey) {
+      builder: (context, navKey) {
         return MaterialApp(
-          title: 'Blood Link',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-            useMaterial3: true,
-          ),
+          title: 'Khalti Test Payment',
           navigatorKey: navKey,
           localizationsDelegates: const [
-            KhaltiLocalizations.delegate
+            KhaltiLocalizations.delegate,
           ],
-          initialRoute: '/',
-          routes: {
-            '/': (context) => const LoginScreen(),
-            '/Signup': (context) => const SignupScreen(),
-            '/AdminHome': (context) => const AdminHome(),
-            '/BloodRequestsPage': (context) => const BloodRequestsPage(),
-            '/DonorManagementPage': (context) => const DonorManagementPage(),
-            '/StaffManagementPage': (context) => const StaffManagementPage(),
-            '/BloodBank': (context) => const BloodBank(
-                  bloodBankId: '',
-                ),
-            '/AddRequestPage': (context) => const AddRequestPage(),
-            '/UpdateBloodInventory': (context) {
-              final Map<String, dynamic> bloodType = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-              return UpdateBloodInventory(bloodType: bloodType);
-            },
-            '/UpdateDonorPage': (context) {
-              final Map<String, dynamic> donor = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-              return UpdateDonorPage(donor: donor);
-            },
-            '/BloodBankList': (context) => const BloodBankList(),
-            '/Profile': (context) => const ProfilePage(),
-            '/Home': (context) => const HomeScreen(),
-            '/Login': (context) => const LoginScreen(),
+          theme: ThemeData(
+            primarySwatch: Colors.deepPurple,
+            useMaterial3: true,
+          ),
+          home: const PaymentHomePage(),
+        );
+      },
+    );
+  }
+}
+
+class PaymentHomePage
+    extends StatelessWidget {
+  const PaymentHomePage(
+      {super.key});
+
+  @override
+  Widget
+      build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Khalti Test Payment'),
+      ),
+      body: const Center(
+        child: KhaltiTestPaymentButton(),
+      ),
+    );
+  }
+}
+
+class KhaltiTestPaymentButton
+    extends StatelessWidget {
+  const KhaltiTestPaymentButton(
+      {super.key});
+
+  @override
+  Widget
+      build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        KhaltiScope.of(context).pay(
+          config: PaymentConfig(
+            amount: 10000, // 100.00 NPR in paisa
+            productIdentity: 'donation-001',
+            productName: 'Test Donation',
+          ),
+          preferences: [
+            PaymentPreference.khalti,
+          ],
+          onSuccess: (PaymentSuccessModel success) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Payment Successful! Token: ${success.token}')),
+            );
+          },
+          onFailure: (PaymentFailureModel failure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Payment Failed: ${failure.message}')),
+            );
+          },
+          onCancel: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Payment Cancelled')),
+            );
           },
         );
       },
+      child: const Text(
+        'Pay with Khalti',
+        style: TextStyle(color: Colors.black),
+      ),
     );
   }
 }
