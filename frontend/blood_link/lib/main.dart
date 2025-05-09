@@ -1,5 +1,15 @@
+import 'package:blood_link/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:khalti_flutter/khalti_flutter.dart';
+
+import 'package:blood_link/login.dart';
+import 'package:blood_link/signup.dart';
+import 'package:blood_link/home.dart';
+import 'package:blood_link/staff_managent.dart';
+import 'package:blood_link/donor_management.dart';
+import 'package:blood_link/blood_request_page.dart';
+import 'package:blood_link/bloodbank_list.dart';
+import 'package:blood_link/add_request_page.dart';
 
 void
     main() {
@@ -20,81 +30,30 @@ class MyApp
       enabledDebugging: true,
       builder: (context, navKey) {
         return MaterialApp(
-          title: 'Khalti Test Payment',
+          title: 'Blood Link',
+          initialRoute: '/',
           navigatorKey: navKey,
+          routes: {
+            '/': (context) => const LoginScreen(),
+            '/Login': (context) => const LoginScreen(),
+            '/Signup': (context) => const SignupScreen(),
+            '/StaffManagementPage': (context) => const StaffManagementPage(),
+            '/DonorManagementPage': (context) => const DonorManagementPage(),
+            '/BloodRequestsPage': (context) => const BloodRequestsPage(),
+            '/BloodBankList': (context) => const BloodBankList(),
+            '/Profile': (context) => const ProfilePage(),
+            '/AddRequestPage': (context) => const AddRequestPage(),
+            '/donorHome': (context) => const HomeScreen(),
+          },
           localizationsDelegates: const [
             KhaltiLocalizations.delegate,
           ],
           theme: ThemeData(
-            primarySwatch: Colors.deepPurple,
             useMaterial3: true,
+            colorSchemeSeed: Colors.red,
           ),
-          home: const PaymentHomePage(),
         );
       },
-    );
-  }
-}
-
-class PaymentHomePage
-    extends StatelessWidget {
-  const PaymentHomePage(
-      {super.key});
-
-  @override
-  Widget
-      build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Khalti Test Payment'),
-      ),
-      body: const Center(
-        child: KhaltiTestPaymentButton(),
-      ),
-    );
-  }
-}
-
-class KhaltiTestPaymentButton
-    extends StatelessWidget {
-  const KhaltiTestPaymentButton(
-      {super.key});
-
-  @override
-  Widget
-      build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        KhaltiScope.of(context).pay(
-          config: PaymentConfig(
-            amount: 10000, // 100.00 NPR in paisa
-            productIdentity: 'donation-001',
-            productName: 'Test Donation',
-          ),
-          preferences: [
-            PaymentPreference.khalti,
-          ],
-          onSuccess: (PaymentSuccessModel success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Payment Successful! Token: ${success.token}')),
-            );
-          },
-          onFailure: (PaymentFailureModel failure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Payment Failed: ${failure.message}')),
-            );
-          },
-          onCancel: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Payment Cancelled')),
-            );
-          },
-        );
-      },
-      child: const Text(
-        'Pay with Khalti',
-        style: TextStyle(color: Colors.black),
-      ),
     );
   }
 }
