@@ -60,9 +60,9 @@ class BloodRequestsPageState
 
   Future<void>
       deleteBloodRequest(String id) async {
-    final String
-        url =
-        'http://localhost:4000/api/requests/$id';
+    final String url = kIsWeb
+        ? 'http://localhost:4000/api/requests/$id'
+        : 'http://10.0.2.2:4000/api/requests/$id';
 
     try {
       final response = await http.delete(Uri.parse(url));
