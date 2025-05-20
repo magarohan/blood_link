@@ -4,6 +4,9 @@ import 'package:http/http.dart'
     as http;
 import 'dart:convert';
 import 'package:blood_link/themes/colors.dart';
+import 'package:csv/csv.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 class AdvanceSearchPage
     extends StatefulWidget {
@@ -130,6 +133,65 @@ class _AdvanceSearchPageState
     });
   }
 
+  Future<void>
+      exportFilteredDataToCSV() async {
+    try {
+      // Define header
+      List<List<dynamic>> csvData = [
+        [
+          'Blood Bank',
+          'Location',
+          'Blood Type',
+          'Rh Factor',
+          'Whole Blood',
+          'RBC',
+          'WBC',
+          'Platelets',
+          'Plasma',
+          'Cryoprecipitate'
+        ],
+        // Add rows
+        ...filteredData.map((item) => [
+              item['bloodBank'],
+              item['location'],
+              item['bloodType'],
+              item['rhFactor'],
+              item['wholeBlood'],
+              item['rbc'],
+              item['wbc'],
+              item['platelets'],
+              item['plasma'],
+              item['cryoprecipitate'],
+            ])
+      ];
+
+      // Convert to CSV string
+      String csv = const ListToCsvConverter().convert(csvData);
+
+      // Get file path
+      final directory = await getApplicationDocumentsDirectory();
+      final path = '${directory.path}/filtered_blood_data.csv';
+      final file = File(path);
+
+      // Write to file
+      await file.writeAsString(csv);
+
+      // Show confirmation
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Exported to $path')),
+        );
+      }
+    } catch (e) {
+      print('Error exporting CSV: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to export CSV')),
+        );
+      }
+    }
+  }
+
   DataCell
       styledCell(int value) {
     return DataCell(
@@ -230,17 +292,27 @@ class _AdvanceSearchPageState
                           ),
                         ],
                       ),
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            selectedLocation = null;
-                            selectedBloodType = null;
-                            selectedRhFactor = null;
-                            filteredData = List.from(combinedData);
-                          });
-                        },
-                        child: const Text('Reset Filters'),
-                      )
+                      Row(
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              setState(() {
+                                selectedLocation = null;
+                                selectedBloodType = null;
+                                selectedRhFactor = null;
+                                filteredData = List.from(combinedData);
+                              });
+                            },
+                            child: const Text('Reset Filters'),
+                          ),
+                          const SizedBox(width: 12),
+                          TextButton.icon(
+                            onPressed: exportFilteredDataToCSV,
+                            icon: const Icon(Icons.download),
+                            label: const Text('Export CSV'),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
