@@ -1,3 +1,4 @@
+import 'package:blood_link/advanced_search.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
@@ -80,6 +81,17 @@ class _BloodBankListState
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.search,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const AdvanceSearchPage()));
+            },
+          )
+        ],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
