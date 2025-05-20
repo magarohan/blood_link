@@ -130,6 +130,19 @@ class _AdvanceSearchPageState
     });
   }
 
+  DataCell
+      styledCell(int value) {
+    return DataCell(
+      Text(
+        '$value',
+        style: TextStyle(
+          color: value < 5 ? Colors.red : Colors.black,
+          fontWeight: value < 5 ? FontWeight.bold : FontWeight.normal,
+        ),
+      ),
+    );
+  }
+
   DataRow
       buildDataRow(Map<String, dynamic> item) {
     return DataRow(cells: [
@@ -137,12 +150,12 @@ class _AdvanceSearchPageState
       DataCell(Text(item['location'])),
       DataCell(Text(item['bloodType'])),
       DataCell(Text(item['rhFactor'])),
-      DataCell(Text('${item['wholeBlood']}')),
-      DataCell(Text('${item['rbc']}')),
-      DataCell(Text('${item['wbc']}')),
-      DataCell(Text('${item['platelets']}')),
-      DataCell(Text('${item['plasma']}')),
-      DataCell(Text('${item['cryoprecipitate']}')),
+      styledCell(item['wholeBlood']),
+      styledCell(item['rbc']),
+      styledCell(item['wbc']),
+      styledCell(item['platelets']),
+      styledCell(item['plasma']),
+      styledCell(item['cryoprecipitate']),
     ]);
   }
 
@@ -217,6 +230,17 @@ class _AdvanceSearchPageState
                           ),
                         ],
                       ),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            selectedLocation = null;
+                            selectedBloodType = null;
+                            selectedRhFactor = null;
+                            filteredData = List.from(combinedData);
+                          });
+                        },
+                        child: const Text('Reset Filters'),
+                      )
                     ],
                   ),
                 ),
