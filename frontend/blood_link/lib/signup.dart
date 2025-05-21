@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
 import 'dart:convert';
-import 'login.dart';
 
 class SignupScreen
     extends StatefulWidget {
@@ -94,10 +93,6 @@ class SignupScreenState
       if (response.statusCode == 200 || response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Registration Successful!')),
-        );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
         );
       } else {
         final errorData = json.decode(response.body);
@@ -196,29 +191,6 @@ class SignupScreenState
                 ),
               ),
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text("Already have an account? "),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginScreen(),
-                        ),
-                      );
-                    },
-                    child: Text(
-                      'Log In.',
-                      style: TextStyle(
-                        color: MyColors.primaryColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
         ),

@@ -92,6 +92,7 @@ class _AdminHomeState
     return Scaffold(
       backgroundColor: MyColors.backgroundColor,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: MyColors.primaryColor,
         elevation: 2,
         title: Column(
