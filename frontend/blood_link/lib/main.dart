@@ -1,6 +1,6 @@
 import 'package:blood_link/profile.dart';
 import 'package:flutter/material.dart';
-import 'package:khalti_flutter/khalti_flutter.dart';
+// // import 'package:khalti_flutter/khalti_flutter.dart';
 
 import 'package:blood_link/login.dart';
 import 'package:blood_link/signup.dart';
@@ -25,35 +25,28 @@ class MyApp
   @override
   Widget
       build(BuildContext context) {
-    return KhaltiScope(
-      publicKey: 'test_public_key_30e12814fed64afa9a7d4a92a2194aeb',
-      enabledDebugging: true,
-      builder: (context, navKey) {
-        return MaterialApp(
-          title: 'Blood Link',
-          initialRoute: '/',
-          navigatorKey: navKey,
-          routes: {
-            '/': (context) => const LoginScreen(),
-            '/Login': (context) => const LoginScreen(),
-            '/Signup': (context) => const SignupScreen(),
-            '/StaffManagementPage': (context) => const StaffManagementPage(),
-            '/DonorManagementPage': (context) => const DonorManagementPage(),
-            '/BloodRequestsPage': (context) => const BloodRequestsPage(),
-            '/BloodBankList': (context) => const BloodBankList(),
-            '/Profile': (context) => const ProfilePage(),
-            '/AddRequestPage': (context) => const AddRequestPage(),
-            '/donorHome': (context) => const HomeScreen(),
-          },
-          localizationsDelegates: const [
-            KhaltiLocalizations.delegate,
-          ],
-          theme: ThemeData(
-            useMaterial3: true,
-            colorSchemeSeed: Colors.red,
-          ),
-        );
+    return MaterialApp(
+      title: 'Blood Link',
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const LoginScreen(),
+        '/Login': (context) => const LoginScreen(),
+        '/Signup': (context) => const SignupScreen(),
+        '/StaffManagementPage': (context) => const StaffManagementPage(),
+        '/DonorManagementPage': (context) => const DonorManagementPage(),
+        '/BloodRequestsPage': (context) => const BloodRequestsPage(),
+        '/BloodBankList': (context) => const BloodBankList(),
+        '/Profile': (context) => const ProfilePage(),
+        '/AddRequestPage': (context) => const AddRequestPage(),
+        '/donorHome': (context) => const HomeScreen(),
       },
+      localizationsDelegates: const [
+        // KhaltiLocalizations.delegate,
+      ],
+      theme: ThemeData(
+        useMaterial3: true,
+        colorSchemeSeed: Colors.red,
+      ),
     );
   }
 }

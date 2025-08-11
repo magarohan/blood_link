@@ -38,7 +38,7 @@ dependencies:
   pie_chart: ^5.4.0
   shared_preferences: ^2.3.3
   google_maps_flutter: ^2.10.1
-  khalti_flutter: ^2.2.0
+  # khalti_flutter: ^2.2.0
   url_launcher: ^6.2.5
 
 dev_dependencies:

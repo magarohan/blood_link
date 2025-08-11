@@ -6,7 +6,7 @@ import 'package:http/http.dart'
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login.dart';
-import 'donation_page.dart';
+// import 'donation_page.dart';
 
 class HomeScreen
     extends StatefulWidget {
@@ -199,10 +199,10 @@ class _HomeScreenState
             ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const DonationPage()),
-          );
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(builder: (context) => const DonationPage()),
+          // );
         },
         label: const Text('Donate'),
         icon: const Icon(Icons.favorite),
