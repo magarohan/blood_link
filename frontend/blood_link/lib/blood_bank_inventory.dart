@@ -1,5 +1,4 @@
 import 'package:blood_link/themes/colors.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
@@ -9,11 +8,14 @@ import 'package:pie_chart/pie_chart.dart';
 class BloodBank
     extends StatefulWidget {
   final String
-      bloodBankId; // Accept bloodBankId as a parameter
+      bloodBankId;
+  final String
+      apiBaseUrl;
 
   const BloodBank(
       {super.key,
-      required this.bloodBankId});
+      required this.bloodBankId,
+      required this.apiBaseUrl});
 
   @override
   State<BloodBank> createState() =>
@@ -39,9 +41,9 @@ class _BloodBankState
   // Fetch blood inventory of a specific blood bank
   Future<void>
       fetchBloodInventory() async {
-    String url = kIsWeb
-        ? 'http://localhost:4000/api/bloods/bank/${widget.bloodBankId}'
-        : 'http://10.0.2.2:4000/api/bloods/bank/${widget.bloodBankId}';
+    String
+        url =
+        '${widget.apiBaseUrl}/api/bloods/bank/${widget.bloodBankId}';
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -148,7 +150,7 @@ class _BloodBankState
                               borderRadius: BorderRadius.circular(10),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.grey.withOpacity(0.2),
+                                  color: Colors.grey.withAlpha(51),
                                   spreadRadius: 2,
                                   blurRadius: 5,
                                   offset: const Offset(0, 3),

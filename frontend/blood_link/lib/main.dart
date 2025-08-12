@@ -10,17 +10,25 @@ import 'package:blood_link/donor_management.dart';
 import 'package:blood_link/blood_request_page.dart';
 import 'package:blood_link/bloodbank_list.dart';
 import 'package:blood_link/add_request_page.dart';
+import 'package:blood_link/app_config.dart';
 
 void
-    main() {
+    main() async {
+  WidgetsFlutterBinding
+      .ensureInitialized();
+  final config =
+      await AppConfig.loadFromAsset();
   runApp(
-      const MyApp());
+      MyApp(apiBaseUrl: config.apiBaseUrl));
 }
 
 class MyApp
     extends StatelessWidget {
+  final String
+      apiBaseUrl;
   const MyApp(
-      {super.key});
+      {super.key,
+      required this.apiBaseUrl});
 
   @override
   Widget
@@ -36,9 +44,9 @@ class MyApp
         '/DonorManagementPage': (context) => const DonorManagementPage(),
         '/BloodRequestsPage': (context) => const BloodRequestsPage(),
         '/BloodBankList': (context) => const BloodBankList(),
-        '/Profile': (context) => const ProfilePage(),
-        '/AddRequestPage': (context) => const AddRequestPage(),
+        '/AddRequestPage': (context) => AddRequestPage(config: AppConfig(apiBaseUrl: apiBaseUrl)),
         '/donorHome': (context) => const HomeScreen(),
+        '/profile': (context) => const ProfilePage(),
       },
       localizationsDelegates: const [
         // KhaltiLocalizations.delegate,

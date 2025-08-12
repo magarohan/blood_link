@@ -6,12 +6,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'update_hospital_inventory.dart';
 import 'package:blood_link/themes/colors.dart';
-import 'package:flutter/foundation.dart';
 
 class AdminHome
     extends StatefulWidget {
+  final String
+      apiBaseUrl;
+
   const AdminHome(
-      {super.key});
+      {super.key,
+      required this.apiBaseUrl});
 
   @override
   State<AdminHome> createState() =>
@@ -36,9 +39,9 @@ class _AdminHomeState
 
   Future<void>
       fetchBloodInventory() async {
-    const String url = kIsWeb
-        ? 'http://localhost:4000/api/hospitalBloods/'
-        : 'http://10.0.2.2:4000/api/hospitalBloods/';
+    final String
+        url =
+        '${widget.apiBaseUrl}/api/hospitalBloods/';
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -172,7 +175,7 @@ class _AdminHomeState
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: Colors.grey.withAlpha(51),
             spreadRadius: 2,
             blurRadius: 5,
             offset: const Offset(0, 3),
@@ -198,7 +201,7 @@ class _AdminHomeState
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => UpdateHospitalInventory(bloodType: bloodType)),
+                MaterialPageRoute(builder: (context) => UpdateHospitalInventory(bloodType: bloodType, apiBaseUrl: widget.apiBaseUrl)),
               ).then((_) {
                 fetchBloodInventory();
               });
@@ -221,19 +224,26 @@ class _AdminHomeState
       String route) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, route);
+        Navigator.pushNamed(context, route, arguments: {
+          'apiBaseUrl': widget.apiBaseUrl
+        });
       },
       child: Container(
         width: 110,
         height: 100,
-        decoration: BoxDecoration(color: Colors.white, border: Border.all(color: MyColors.primaryColor), borderRadius: BorderRadius.circular(10), boxShadow: const [
-          BoxShadow(
-            color: Colors.grey,
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: Offset(0, 3),
-          )
-        ]),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: MyColors.primaryColor),
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.grey,
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: Offset(0, 3),
+            )
+          ],
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

@@ -1,9 +1,9 @@
 import 'package:blood_link/themes/colors.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
 import 'dart:convert';
+import '../app_config.dart';
 
 class UpdateDonorPage
     extends StatefulWidget {
@@ -40,42 +40,42 @@ class UpdateDonorPageState
   final TextEditingController
       _locationController =
       TextEditingController();
+
   bool
       isLoading =
       false;
-
-  String baseUrl = kIsWeb
-      ? 'http://localhost:4000/api/donors/update/'
-      : 'http://10.0.2.2:4000/api/donors/update/';
+  late Future<AppConfig>
+      _configFuture;
 
   @override
   void
       initState() {
     super.initState();
+    _configFuture =
+        AppConfig.loadFromAsset();
     _nameController.text =
-        widget.donor['name'];
+        widget.donor['name'] ?? '';
     _emailController.text =
-        widget.donor['email'];
+        widget.donor['email'] ?? '';
     _phoneController.text =
-        widget.donor['phoneNumber'];
+        widget.donor['phoneNumber'] ?? '';
     _bloodTypeController.text =
-        widget.donor['bloodType'];
+        widget.donor['bloodType'] ?? '';
     _rhFactorController.text =
-        widget.donor['rhFactor'];
+        widget.donor['rhFactor'] ?? '';
     _locationController.text =
-        widget.donor['location'];
+        widget.donor['location'] ?? '';
   }
 
   Future<void>
-      updateDonor() async {
+      updateDonor(AppConfig config) async {
     setState(() {
       isLoading = true;
     });
 
     String
         donorId =
-        widget.donor["id"];
-    print('Donor ID in UpdateDonorPage: $donorId'); // Verify ID
+        widget.donor["id"] ?? '';
     if (donorId.isEmpty) {
       print("Error: Donor ID is missing");
       setState(() {
@@ -97,7 +97,7 @@ class UpdateDonorPageState
 
     try {
       final response = await http.patch(
-        Uri.parse('$baseUrl$donorId'),
+        Uri.parse('${config.apiBaseUrl}/api/donors/update/$donorId'),
         headers: {
           'Content-Type': 'application/json'
         },
@@ -106,9 +106,9 @@ class UpdateDonorPageState
 
       if (response.statusCode == 200) {
         print('Donor updated successfully');
-        Navigator.pop(context); // Navigate back after successful update
+        Navigator.pop(context); // Go back after success
       } else {
-        print('Failed to update donor');
+        print('Failed to update donor: ${response.body}');
       }
     } catch (e) {
       print('Error updating donor: $e');
@@ -122,51 +122,62 @@ class UpdateDonorPageState
   @override
   Widget
       build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: MyColors.backgroundColor,
-      appBar: AppBar(
-        title: const Text('Update Donor', style: TextStyle(color: Colors.white)),
-        backgroundColor: MyColors.primaryColor,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : Column(
-                children: [
-                  TextField(
-                    controller: _nameController,
-                    decoration: const InputDecoration(labelText: 'Name'),
+    return FutureBuilder<AppConfig>(
+      future: _configFuture,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        final config = snapshot.data!;
+        return Scaffold(
+          backgroundColor: MyColors.backgroundColor,
+          appBar: AppBar(
+            title: const Text('Update Donor', style: TextStyle(color: Colors.white)),
+            backgroundColor: MyColors.primaryColor,
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : Column(
+                    children: [
+                      TextField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(labelText: 'Name'),
+                      ),
+                      TextField(
+                        controller: _emailController,
+                        decoration: const InputDecoration(labelText: 'Email'),
+                      ),
+                      TextField(
+                        controller: _phoneController,
+                        decoration: const InputDecoration(labelText: 'Phone Number'),
+                      ),
+                      TextField(
+                        controller: _bloodTypeController,
+                        decoration: const InputDecoration(labelText: 'Blood Group'),
+                      ),
+                      TextField(
+                        controller: _rhFactorController,
+                        decoration: const InputDecoration(labelText: 'RH Factor'),
+                      ),
+                      TextField(
+                        controller: _locationController,
+                        decoration: const InputDecoration(labelText: 'Location'),
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () => updateDonor(config),
+                        style: ElevatedButton.styleFrom(backgroundColor: MyColors.primaryColor),
+                        child: const Text('Update Donor', style: TextStyle(color: Colors.white)),
+                      ),
+                    ],
                   ),
-                  TextField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(labelText: 'Email'),
-                  ),
-                  TextField(
-                    controller: _phoneController,
-                    decoration: const InputDecoration(labelText: 'Phone Number'),
-                  ),
-                  TextField(
-                    controller: _bloodTypeController,
-                    decoration: const InputDecoration(labelText: 'Blood Group'),
-                  ),
-                  TextField(
-                    controller: _rhFactorController,
-                    decoration: const InputDecoration(labelText: 'RH Factor'),
-                  ),
-                  TextField(
-                    controller: _locationController,
-                    decoration: const InputDecoration(labelText: 'Location'),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: updateDonor,
-                    style: ElevatedButton.styleFrom(backgroundColor: MyColors.primaryColor),
-                    child: const Text('Update Donor', style: TextStyle(color: Colors.white)),
-                  ),
-                ],
-              ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

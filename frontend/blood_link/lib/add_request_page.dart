@@ -3,7 +3,7 @@ import 'package:http/http.dart'
     as http;
 import 'dart:convert';
 import 'package:blood_link/themes/colors.dart';
-import 'package:flutter/foundation.dart'; //
+import '../app_config.dart';
 
 const List<String>
     rhFactors =
@@ -22,8 +22,12 @@ const List<String>
 
 class AddRequestPage
     extends StatefulWidget {
+  final AppConfig
+      config;
+
   const AddRequestPage(
-      {super.key});
+      {super.key,
+      required this.config});
 
   @override
   AddRequestState createState() =>
@@ -85,10 +89,9 @@ class AddRequestState
 
   Future<void>
       _addRequest() async {
-    // Dynamically choose the correct URL
-    const String url = kIsWeb
-        ? 'http://localhost:4000/api/requests' // Web URL
-        : 'http://10.0.2.2:4000/api/requests'; // Android Emulator URL
+    final String
+        url =
+        '${widget.config.apiBaseUrl}/api/requests';
 
     if (_selectedBloodType == null ||
         _selectedRhFactor == null) {
@@ -131,38 +134,33 @@ class AddRequestState
         Navigator.pop(context, true);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to Add Request')),
+          SnackBar(content: Text('Failed to Add Request: ${response.statusCode}')),
         );
       }
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error Adding Request')),
+        SnackBar(content: Text('Error Adding Request: $error')),
       );
     }
   }
 
   int _parseComponentSelection(
       String? selection) {
-    if (selection ==
-        'None') {
-      return 0;
-    } else if (selection ==
-        '1 unit') {
-      return 1;
-    } else if (selection ==
-        '2 units') {
-      return 2;
-    } else if (selection ==
-        '3 units') {
-      return 3;
-    } else if (selection ==
-        '4 units') {
-      return 4;
-    } else if (selection ==
-        '5 units') {
-      return 5;
-    } else {
-      return 0;
+    switch (selection) {
+      case 'None':
+        return 0;
+      case '1 unit':
+        return 1;
+      case '2 units':
+        return 2;
+      case '3 units':
+        return 3;
+      case '4 units':
+        return 4;
+      case '5 units':
+        return 5;
+      default:
+        return 0;
     }
   }
 
@@ -180,159 +178,161 @@ class AddRequestState
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Patient Name'),
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: _locationController,
-              decoration: const InputDecoration(labelText: 'Location'),
-            ),
-            const SizedBox(height: 10),
-
-            // Blood Type Dropdown
-            DropdownButtonFormField<String>(
-              value: _selectedBloodType,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedBloodType = newValue;
-                });
-              },
-              items: bloodTypes.map((String bloodType) {
-                return DropdownMenuItem<String>(
-                  value: bloodType,
-                  child: Text(bloodType),
-                );
-              }).toList(),
-              decoration: const InputDecoration(labelText: 'Blood Type'),
-            ),
-
-            const SizedBox(height: 10),
-
-            // Rh Factor Dropdown
-            DropdownButtonFormField<String>(
-              value: _selectedRhFactor,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedRhFactor = newValue;
-                });
-              },
-              items: rhFactors.map((String rhFactor) {
-                return DropdownMenuItem<String>(
-                  value: rhFactor,
-                  child: Text(rhFactor),
-                );
-              }).toList(),
-              decoration: const InputDecoration(labelText: 'Rh Factor'),
-            ),
-
-            const SizedBox(height: 10),
-
-            // Components Dropdowns (Select units)
-            DropdownButtonFormField<String>(
-              value: _selectedWholeBlood,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedWholeBlood = newValue;
-                });
-              },
-              items: componentOptions.map((String option) {
-                return DropdownMenuItem<String>(
-                  value: option,
-                  child: Text(option),
-                );
-              }).toList(),
-              decoration: const InputDecoration(labelText: 'Whole Blood'),
-            ),
-            DropdownButtonFormField<String>(
-              value: _selectedRedBloodCells,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedRedBloodCells = newValue;
-                });
-              },
-              items: componentOptions.map((String option) {
-                return DropdownMenuItem<String>(
-                  value: option,
-                  child: Text(option),
-                );
-              }).toList(),
-              decoration: const InputDecoration(labelText: 'Red Blood Cells'),
-            ),
-            DropdownButtonFormField<String>(
-              value: _selectedWhiteBloodCells,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedWhiteBloodCells = newValue;
-                });
-              },
-              items: componentOptions.map((String option) {
-                return DropdownMenuItem<String>(
-                  value: option,
-                  child: Text(option),
-                );
-              }).toList(),
-              decoration: const InputDecoration(labelText: 'White Blood Cells'),
-            ),
-            DropdownButtonFormField<String>(
-              value: _selectedPlatelets,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedPlatelets = newValue;
-                });
-              },
-              items: componentOptions.map((String option) {
-                return DropdownMenuItem<String>(
-                  value: option,
-                  child: Text(option),
-                );
-              }).toList(),
-              decoration: const InputDecoration(labelText: 'Platelets'),
-            ),
-            DropdownButtonFormField<String>(
-              value: _selectedPlasma,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedPlasma = newValue;
-                });
-              },
-              items: componentOptions.map((String option) {
-                return DropdownMenuItem<String>(
-                  value: option,
-                  child: Text(option),
-                );
-              }).toList(),
-              decoration: const InputDecoration(labelText: 'Plasma'),
-            ),
-            DropdownButtonFormField<String>(
-              value: _selectedCryoprecipitate,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedCryoprecipitate = newValue;
-                });
-              },
-              items: componentOptions.map((String option) {
-                return DropdownMenuItem<String>(
-                  value: option,
-                  child: Text(option),
-                );
-              }).toList(),
-              decoration: const InputDecoration(labelText: 'Cryoprecipitate'),
-            ),
-
-            const SizedBox(height: 20),
-            Center(
-              child: ElevatedButton(
-                onPressed: _addRequest,
-                style: ElevatedButton.styleFrom(backgroundColor: MyColors.primaryColor),
-                child: const Text('Add Request', style: TextStyle(color: Colors.white)),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(labelText: 'Patient Name'),
               ),
-            ),
-          ],
+              const SizedBox(height: 10),
+              TextField(
+                controller: _locationController,
+                decoration: const InputDecoration(labelText: 'Location'),
+              ),
+              const SizedBox(height: 10),
+
+              // Blood Type Dropdown
+              DropdownButtonFormField<String>(
+                value: _selectedBloodType,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedBloodType = newValue;
+                  });
+                },
+                items: bloodTypes.map((String bloodType) {
+                  return DropdownMenuItem<String>(
+                    value: bloodType,
+                    child: Text(bloodType),
+                  );
+                }).toList(),
+                decoration: const InputDecoration(labelText: 'Blood Type'),
+              ),
+
+              const SizedBox(height: 10),
+
+              // Rh Factor Dropdown
+              DropdownButtonFormField<String>(
+                value: _selectedRhFactor,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedRhFactor = newValue;
+                  });
+                },
+                items: rhFactors.map((String rhFactor) {
+                  return DropdownMenuItem<String>(
+                    value: rhFactor,
+                    child: Text(rhFactor),
+                  );
+                }).toList(),
+                decoration: const InputDecoration(labelText: 'Rh Factor'),
+              ),
+
+              const SizedBox(height: 10),
+
+              // Components Dropdowns (Select units)
+              DropdownButtonFormField<String>(
+                value: _selectedWholeBlood,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedWholeBlood = newValue;
+                  });
+                },
+                items: componentOptions.map((String option) {
+                  return DropdownMenuItem<String>(
+                    value: option,
+                    child: Text(option),
+                  );
+                }).toList(),
+                decoration: const InputDecoration(labelText: 'Whole Blood'),
+              ),
+              DropdownButtonFormField<String>(
+                value: _selectedRedBloodCells,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedRedBloodCells = newValue;
+                  });
+                },
+                items: componentOptions.map((String option) {
+                  return DropdownMenuItem<String>(
+                    value: option,
+                    child: Text(option),
+                  );
+                }).toList(),
+                decoration: const InputDecoration(labelText: 'Red Blood Cells'),
+              ),
+              DropdownButtonFormField<String>(
+                value: _selectedWhiteBloodCells,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedWhiteBloodCells = newValue;
+                  });
+                },
+                items: componentOptions.map((String option) {
+                  return DropdownMenuItem<String>(
+                    value: option,
+                    child: Text(option),
+                  );
+                }).toList(),
+                decoration: const InputDecoration(labelText: 'White Blood Cells'),
+              ),
+              DropdownButtonFormField<String>(
+                value: _selectedPlatelets,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedPlatelets = newValue;
+                  });
+                },
+                items: componentOptions.map((String option) {
+                  return DropdownMenuItem<String>(
+                    value: option,
+                    child: Text(option),
+                  );
+                }).toList(),
+                decoration: const InputDecoration(labelText: 'Platelets'),
+              ),
+              DropdownButtonFormField<String>(
+                value: _selectedPlasma,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedPlasma = newValue;
+                  });
+                },
+                items: componentOptions.map((String option) {
+                  return DropdownMenuItem<String>(
+                    value: option,
+                    child: Text(option),
+                  );
+                }).toList(),
+                decoration: const InputDecoration(labelText: 'Plasma'),
+              ),
+              DropdownButtonFormField<String>(
+                value: _selectedCryoprecipitate,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedCryoprecipitate = newValue;
+                  });
+                },
+                items: componentOptions.map((String option) {
+                  return DropdownMenuItem<String>(
+                    value: option,
+                    child: Text(option),
+                  );
+                }).toList(),
+                decoration: const InputDecoration(labelText: 'Cryoprecipitate'),
+              ),
+
+              const SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  onPressed: _addRequest,
+                  style: ElevatedButton.styleFrom(backgroundColor: MyColors.primaryColor),
+                  child: const Text('Add Request', style: TextStyle(color: Colors.white)),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

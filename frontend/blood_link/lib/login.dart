@@ -8,6 +8,7 @@ import 'package:http/http.dart'
     as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../app_config.dart';
 
 class LoginScreen
     extends StatefulWidget {
@@ -33,12 +34,21 @@ class _LoginScreenState
   bool
       _checkingLogin =
       true;
+  late AppConfig
+      config;
 
   @override
   void
       initState() {
     super.initState();
-    _checkIfAlreadyLoggedIn();
+    _initialize();
+  }
+
+  Future<void>
+      _initialize() async {
+    config =
+        await AppConfig.loadFromAsset();
+    await _checkIfAlreadyLoggedIn();
   }
 
   Future<void>
@@ -50,9 +60,6 @@ class _LoginScreenState
     final bloodBankToken =
         prefs.getString('bloodBankToken');
 
-    print('donorToken: $donorToken');
-    print('bloodBankToken: $bloodBankToken');
-
     if (donorToken != null &&
         donorToken.isNotEmpty) {
       Navigator.pushReplacement(
@@ -62,7 +69,12 @@ class _LoginScreenState
     } else if (bloodBankToken != null && bloodBankToken.isNotEmpty) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => BloodBank(bloodBankId: prefs.getString('bloodBankId') ?? '')),
+        MaterialPageRoute(
+          builder: (context) => BloodBank(
+            bloodBankId: prefs.getString('bloodBankId') ?? '',
+            apiBaseUrl: config.apiBaseUrl,
+          ),
+        ),
       );
     } else {
       setState(() {
@@ -86,12 +98,14 @@ class _LoginScreenState
       return;
     }
 
-    // Admin shortcut
     if (email == "admin" &&
         password == "admin") {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const AdminHome()),
+        MaterialPageRoute(
+            builder: (context) => AdminHome(
+                  apiBaseUrl: config.apiBaseUrl,
+                )),
       );
       return;
     }
@@ -100,15 +114,12 @@ class _LoginScreenState
       _isLoading = true;
     });
 
-    const donorURI = kIsWeb
-        ? 'http://localhost:4000/api/donors/login'
-        : 'http://10.0.2.2:4000/api/donors/login';
-    const bloodBankURI = kIsWeb
-        ? 'http://localhost:4000/api/bloodBanks/login'
-        : 'http://10.0.2.2:4000/api/bloodBanks/login';
+    final donorURI =
+        '${config.apiBaseUrl}/api/donors/login';
+    final bloodBankURI =
+        '${config.apiBaseUrl}/api/bloodBanks/login';
 
     try {
-      // Try donor login
       final donorResponse = await http.post(
         Uri.parse(donorURI),
         headers: {
@@ -147,7 +158,6 @@ class _LoginScreenState
         }
       }
 
-      // Try blood bank login
       final bloodBankResponse = await http.post(
         Uri.parse(bloodBankURI),
         headers: {
@@ -173,8 +183,10 @@ class _LoginScreenState
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => BloodBank(bloodBankId: bloodBankId),
-          ),
+              builder: (context) => BloodBank(
+                    bloodBankId: bloodBankId,
+                    apiBaseUrl: config.apiBaseUrl,
+                  )),
         );
         return;
       }
@@ -192,7 +204,9 @@ class _LoginScreenState
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('An error occurred. Please try again later.')),
       );
-      print("Error: $error");
+      if (kDebugMode) {
+        print("Error: $error");
+      }
     }
   }
 
@@ -208,43 +222,38 @@ class _LoginScreenState
     return Scaffold(
       backgroundColor: MyColors.backgroundColor,
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 80),
-              Image.asset('assets/blood_drop.png', height: 120),
-              const SizedBox(height: 10),
-              Text(
-                'Blood Link',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: MyColors.primaryColor),
-              ),
-              const SizedBox(height: 40),
-              TextField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Password'),
-              ),
-              const SizedBox(height: 20),
-              _isLoading
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton(
-                      onPressed: _login,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: MyColors.primaryColor,
-                      ),
-                      child: const Text(
-                        'Login',
-                        style: TextStyle(color: Colors.white),
-                      ),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 80),
+        child: Column(
+          children: [
+            Image.asset('assets/blood_drop.png', height: 120),
+            const SizedBox(height: 10),
+            Text(
+              'Blood Link',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: MyColors.primaryColor),
+            ),
+            const SizedBox(height: 40),
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Password'),
+            ),
+            const SizedBox(height: 20),
+            _isLoading
+                ? const CircularProgressIndicator()
+                : ElevatedButton(
+                    onPressed: _login,
+                    style: ElevatedButton.styleFrom(backgroundColor: MyColors.primaryColor),
+                    child: const Text(
+                      'Login',
+                      style: TextStyle(color: Colors.white),
                     ),
-            ],
-          ),
+                  ),
+          ],
         ),
       ),
     );

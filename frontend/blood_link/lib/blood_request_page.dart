@@ -1,5 +1,5 @@
+import 'package:blood_link/app_config.dart';
 import 'package:blood_link/themes/colors.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
@@ -27,18 +27,34 @@ class BloodRequestsPageState
       errorMessage =
       '';
 
+  late AppConfig
+      _config;
+
   @override
   void
       initState() {
     super.initState();
-    fetchBloodRequests();
+    _loadConfigAndData();
   }
 
   Future<void>
-      fetchBloodRequests() async {
-    const String url = kIsWeb
-        ? 'http://localhost:4000/api/requests'
-        : 'http://10.0.2.2:4000/api/requests';
+      _loadConfigAndData() async {
+    try {
+      _config = await AppConfig.loadFromAsset();
+      await fetchBloodRequests(_config);
+    } catch (e) {
+      setState(() {
+        errorMessage = 'Failed to load configuration or data';
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void>
+      fetchBloodRequests(AppConfig config) async {
+    final String
+        url =
+        '${config.apiBaseUrl}/api/requests';
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -48,11 +64,14 @@ class BloodRequestsPageState
           isLoading = false;
         });
       } else {
-        throw Exception('Failed to load blood requests');
+        setState(() {
+          errorMessage = 'Failed to load blood requests: ${response.statusCode}';
+          isLoading = false;
+        });
       }
     } catch (error) {
       setState(() {
-        errorMessage = "Error fetching data";
+        errorMessage = "Error fetching data: $error";
         isLoading = false;
       });
     }
@@ -60,9 +79,9 @@ class BloodRequestsPageState
 
   Future<void>
       deleteBloodRequest(String id) async {
-    final String url = kIsWeb
-        ? 'http://localhost:4000/api/requests/$id'
-        : 'http://10.0.2.2:4000/api/requests/$id';
+    final String
+        url =
+        '${_config.apiBaseUrl}/api/requests/$id';
 
     try {
       final response = await http.delete(Uri.parse(url));
@@ -71,11 +90,11 @@ class BloodRequestsPageState
           bloodRequests.removeWhere((request) => request['_id'] == id);
         });
       } else {
-        throw Exception('Failed to delete request');
+        throw Exception('Failed to delete request: ${response.statusCode}');
       }
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Error deleting request")),
+        SnackBar(content: Text("Error deleting request: $error")),
       );
     }
   }
@@ -107,13 +126,18 @@ class BloodRequestsPageState
                       request['location'],
                       request['bloodType'],
                       request['rhFactor'],
-                      request['components'],
+                      Map<String, dynamic>.from(request['components'] ?? {}),
                     );
                   },
                 ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/AddRequestPage');
+          Navigator.pushNamed(context, '/AddRequestPage').then((value) {
+            if (value == true) {
+              // Reload list if a new request was added
+              fetchBloodRequests(_config);
+            }
+          });
         },
         backgroundColor: MyColors.primaryColor,
         child: const Icon(
@@ -137,26 +161,24 @@ class BloodRequestsPageState
     String
         rhFactor,
     Map<String, dynamic>
-        components, // Assuming components are a map
+        components,
   ) {
     String
         bloodTypeWithRh =
         '$bloodType$rhFactor';
 
-    // Generate a string representing the components
+    // Generate components description string
     String
         componentsText =
         '';
-
-    // Check if components is not null and not empty
     if (components.isNotEmpty) {
       components.forEach((key, value) {
         if (value > 0) {
-          componentsText += '$key: $value units\n';
+          componentsText += '${_formatComponentKey(key)}: $value unit${value > 1 ? 's' : ''}\n';
         }
       });
     } else {
-      componentsText = 'No components available\n'; // Placeholder when no components are available
+      componentsText = 'No components available';
     }
 
     return Card(
@@ -174,7 +196,7 @@ class BloodRequestsPageState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(location),
-            Text(componentsText),
+            Text(componentsText.trim()),
           ],
         ),
         trailing: IconButton(
@@ -183,5 +205,26 @@ class BloodRequestsPageState
         ),
       ),
     );
+  }
+
+  // Helper to prettify component keys (e.g. wholeBlood -> Whole Blood)
+  String
+      _formatComponentKey(String key) {
+    final RegExp
+        regExp =
+        RegExp(r'(?<=[a-z])([A-Z])');
+    return key.replaceAllMapped(regExp, (m) => ' ${m.group(0)}').capitalize();
+  }
+}
+
+extension StringExtension
+    on String {
+  String
+      capitalize() {
+    if (isEmpty) {
+      return this;
+    }
+    return this[0].toUpperCase() +
+        substring(1);
   }
 }

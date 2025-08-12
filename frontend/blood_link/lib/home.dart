@@ -1,5 +1,5 @@
+import 'package:blood_link/app_config.dart';
 import 'package:blood_link/themes/colors.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
@@ -32,11 +32,15 @@ class _HomeScreenState
   List<Map<String, dynamic>>
       bloodRequests =
       [];
+  late Future<AppConfig>
+      _configFuture;
 
   @override
   void
       initState() {
     super.initState();
+    _configFuture =
+        AppConfig.loadFromAsset();
     _checkLoginStatus();
   }
 
@@ -79,7 +83,8 @@ class _HomeScreenState
         donorBloodType = bloodType;
         donorRhFactor = rhFactor;
       });
-      _fetchMatchingBloodRequests(bloodType, rhFactor);
+      final config = await _configFuture;
+      _fetchMatchingBloodRequests(config.apiBaseUrl, bloodType, rhFactor);
     } else {
       setState(() {
         isLoading = false;
@@ -91,11 +96,11 @@ class _HomeScreenState
   }
 
   Future<void> _fetchMatchingBloodRequests(
+      String apiBaseUrl,
       String bloodType,
       String rhFactor) async {
-    final url = kIsWeb
-        ? Uri.parse('http://localhost:4000/api/requests/search?bloodType=$bloodType&rhFactor=$rhFactor')
-        : Uri.parse('http://10.0.2.2:4000/api/requests/search?bloodType=$bloodType&rhFactor=$rhFactor');
+    final url =
+        Uri.parse('$apiBaseUrl/api/requests/search?bloodType=$bloodType&rhFactor=$rhFactor');
 
     try {
       final response = await http.get(url);

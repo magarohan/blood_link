@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:blood_link/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
@@ -25,19 +25,34 @@ class _BloodBankListState
   bool
       isLoading =
       true;
+  late AppConfig
+      _config;
 
   @override
   void
       initState() {
     super.initState();
-    fetchBloodBanks();
+    _loadConfigAndFetchBloodBanks();
   }
 
   Future<void>
-      fetchBloodBanks() async {
-    const String url = kIsWeb
-        ? 'http://localhost:4000/api/bloodBanks'
-        : 'http://10.0.2.2:4000/api/bloodBanks';
+      _loadConfigAndFetchBloodBanks() async {
+    try {
+      _config = await AppConfig.loadFromAsset();
+      await fetchBloodBanks(_config);
+    } catch (e) {
+      print('Error loading config or fetching blood banks: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void>
+      fetchBloodBanks(AppConfig config) async {
+    final String
+        url =
+        '${config.apiBaseUrl}/api/bloodBanks';
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -51,20 +66,21 @@ class _BloodBankListState
               'name': item['name'],
               'address': item['address'],
               'contact': item['contact'],
-              'latitude': item['latitude'] is String ? double.tryParse(item['latitude']) : (item['latitude']?.toDouble() ?? 0.0),
-              'longitude': item['longitude'] is String ? double.tryParse(item['longitude']) : (item['longitude']?.toDouble() ?? 0.0),
+              'latitude': item['latitude'] is String ? double.tryParse(item['latitude']) ?? 0.0 : (item['latitude']?.toDouble() ?? 0.0),
+              'longitude': item['longitude'] is String ? double.tryParse(item['longitude']) ?? 0.0 : (item['longitude']?.toDouble() ?? 0.0),
             };
           }).toList();
           isLoading = false;
         });
       } else {
-        throw Exception('Failed to load blood banks');
+        throw Exception('Failed to load blood banks with status: ${response.statusCode}');
       }
     } catch (error) {
       print('Error fetching blood banks: $error');
       setState(() {
         isLoading = false;
       });
+      // Optionally you can show a SnackBar or error UI here
     }
   }
 
@@ -76,7 +92,10 @@ class _BloodBankListState
       appBar: AppBar(
         backgroundColor: MyColors.primaryColor,
         elevation: 2,
-        title: const Text("Blood Banks", style: TextStyle(color: Colors.white, fontSize: 18)),
+        title: const Text(
+          "Blood Banks",
+          style: TextStyle(color: Colors.white, fontSize: 18),
+        ),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
         ),
@@ -89,14 +108,15 @@ class _BloodBankListState
                   padding: const EdgeInsets.all(16.0),
                   itemCount: bloodBankList.length,
                   itemBuilder: (context, index) {
-                    return _buildBloodBankCard(bloodBankList[index]);
+                    return _buildBloodBankCard(bloodBankList[index], _config.apiBaseUrl);
                   },
                 ),
     );
   }
 
-  Widget
-      _buildBloodBankCard(Map<String, dynamic> bloodBank) {
+  Widget _buildBloodBankCard(
+      Map<String, dynamic> bloodBank,
+      String apiBaseUrl) {
     return Container(
       padding: const EdgeInsets.all(16.0),
       margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -106,7 +126,7 @@ class _BloodBankListState
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: Colors.grey.withAlpha(51),
             spreadRadius: 2,
             blurRadius: 5,
             offset: const Offset(0, 3),
@@ -132,7 +152,7 @@ class _BloodBankListState
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => BloodBank(bloodBankId: bloodBank['id']),
+                      builder: (context) => BloodBank(bloodBankId: bloodBank['id'], apiBaseUrl: apiBaseUrl),
                     ),
                   );
                 },

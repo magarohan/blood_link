@@ -1,10 +1,10 @@
 import 'package:blood_link/themes/colors.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
 import 'dart:convert';
 import 'login.dart';
+import '../app_config.dart';
 
 class SignupScreen
     extends StatefulWidget {
@@ -33,8 +33,23 @@ class SignupScreenState
   final _locationController =
       TextEditingController();
 
+  late Future<AppConfig>
+      _configFuture;
+
+  bool
+      _isLoading =
+      false;
+
+  @override
+  void
+      initState() {
+    super.initState();
+    _configFuture =
+        AppConfig.loadFromAsset();
+  }
+
   Future<void>
-      _register() async {
+      _register(AppConfig config) async {
     final fullName =
         _fullNameController.text.trim();
     final email =
@@ -67,9 +82,8 @@ class SignupScreenState
       _isLoading = true;
     });
 
-    final url = kIsWeb
-        ? Uri.parse('http://localhost:4000/api/donors/signup')
-        : Uri.parse('http://10.0.2.2:4000/api/donors/signup');
+    final url =
+        Uri.parse('${config.apiBaseUrl}/api/donors/signup');
     try {
       final response = await http.post(
         url,
@@ -116,120 +130,132 @@ class SignupScreenState
     }
   }
 
-  bool
-      _isLoading =
-      false;
-
   @override
   Widget
       build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: MyColors.backgroundColor,
-      appBar: AppBar(
-        title: const Text('Sign Up', style: TextStyle(color: Colors.white)),
-        backgroundColor: MyColors.primaryColor,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(height: 40),
-              Center(
-                child: Column(
-                  children: [
-                    Image.asset(
-                      'assets/blood_drop.png',
-                      height: 120,
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      'Blood Link',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: MyColors.primaryColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 40),
-              _buildTextField(_fullNameController, 'Full Name'),
-              const SizedBox(height: 10),
-              _buildTextField(_emailController, 'Email'),
-              const SizedBox(height: 10),
-              _buildTextField(_passwordController, 'Password', obscureText: true),
-              const SizedBox(height: 10),
-              _buildTextField(_phoneController, 'Phone Number'),
-              const SizedBox(height: 10),
-              _buildTextField(_bloodTypeController, 'Blood Type'),
-              const SizedBox(height: 10),
-              _buildTextField(_rhFactorController, 'rhFactor'),
-              const SizedBox(height: 10),
-              _buildTextField(_locationController, 'Location'),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: MyColors.primaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  onPressed: _register,
-                  child: _isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text(
-                          'Register',
-                          style: TextStyle(fontSize: 16, color: Colors.white),
-                        ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
+    return FutureBuilder<AppConfig>(
+      future: _configFuture,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        final config = snapshot.data!;
+        return Scaffold(
+          backgroundColor: MyColors.backgroundColor,
+          appBar: AppBar(
+            title: const Text('Sign Up', style: TextStyle(color: Colors.white)),
+            backgroundColor: MyColors.primaryColor,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ),
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Already have an account? "),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginScreen(),
+                  const SizedBox(height: 40),
+                  Center(
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          'assets/blood_drop.png',
+                          height: 120,
                         ),
-                      );
-                    },
-                    child: Text(
-                      'Log In.',
-                      style: TextStyle(
-                        color: MyColors.primaryColor,
-                        fontWeight: FontWeight.bold,
-                      ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Blood Link',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: MyColors.primaryColor,
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
+                  const SizedBox(height: 40),
+                  _buildTextField(_fullNameController, 'Full Name'),
+                  const SizedBox(height: 10),
+                  _buildTextField(_emailController, 'Email'),
+                  const SizedBox(height: 10),
+                  _buildTextField(_passwordController, 'Password', obscureText: true),
+                  const SizedBox(height: 10),
+                  _buildTextField(_phoneController, 'Phone Number'),
+                  const SizedBox(height: 10),
+                  _buildTextField(_bloodTypeController, 'Blood Type'),
+                  const SizedBox(height: 10),
+                  _buildTextField(_rhFactorController, 'Rh Factor'),
+                  const SizedBox(height: 10),
+                  _buildTextField(_locationController, 'Location'),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: MyColors.primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () => _register(config),
+                      child: _isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text(
+                              'Register',
+                              style: TextStyle(fontSize: 16, color: Colors.white),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Already have an account? "),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LoginScreen(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'Log In.',
+                          style: TextStyle(
+                            color: MyColors.primaryColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildTextField(
-      TextEditingController controller,
-      String hintText,
-      {bool obscureText = false}) {
+  Widget
+      _buildTextField(
+    TextEditingController
+        controller,
+    String
+        hintText, {
+    bool obscureText =
+        false,
+  }) {
     return TextField(
       controller: controller,
       obscureText: obscureText,

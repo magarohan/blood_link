@@ -1,6 +1,6 @@
+import 'package:blood_link/app_config.dart';
 import 'package:blood_link/themes/colors.dart';
 import 'package:blood_link/update_donor_page.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
     as http;
@@ -27,24 +27,39 @@ class DonorManagementPageState
   String
       errorMessage =
       "";
-  final String baseUrl = kIsWeb
-      ? 'http://localhost:4000/api/donors/'
-      : 'http://10.0.2.2:4000/api/donors/';
+  late AppConfig
+      _config;
 
   @override
   void
       initState() {
     super.initState();
-    fetchDonors();
+    _loadConfigAndFetchDonors();
   }
 
   Future<void>
-      fetchDonors() async {
+      _loadConfigAndFetchDonors() async {
+    try {
+      _config = await AppConfig.loadFromAsset();
+      await fetchDonors(_config);
+    } catch (e) {
+      setState(() {
+        errorMessage = "Failed to load config or donors";
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void>
+      fetchDonors(AppConfig config) async {
+    final String
+        baseUrl =
+        '${config.apiBaseUrl}/api/donors/';
     try {
       final response = await http.get(Uri.parse(baseUrl));
       if (response.statusCode == 200) {
+        List<dynamic> responseData = json.decode(response.body);
         setState(() {
-          List<dynamic> responseData = json.decode(response.body);
           donors = responseData.map((donor) {
             return {
               "id": donor["_id"],
@@ -56,15 +71,18 @@ class DonorManagementPageState
               "location": donor["location"] ?? "No location",
             };
           }).toList();
-
           isLoading = false;
+          errorMessage = "";
         });
       } else {
-        throw Exception('Failed to load donors');
+        setState(() {
+          errorMessage = "Failed to load donors: ${response.statusCode}";
+          isLoading = false;
+        });
       }
     } catch (e) {
       setState(() {
-        errorMessage = "Error fetching data";
+        errorMessage = "Error fetching donors";
         isLoading = false;
       });
     }
@@ -72,18 +90,24 @@ class DonorManagementPageState
 
   Future<void>
       deleteDonor(String id) async {
+    final String
+        baseUrl =
+        '${_config.apiBaseUrl}/api/donors/';
     try {
       final response = await http.delete(Uri.parse('$baseUrl$id'));
       if (response.statusCode == 200) {
         setState(() {
           donors.removeWhere((donor) => donor["id"] == id);
-          fetchDonors();
         });
       } else {
-        throw Exception('Failed to delete donor');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete donor: ${response.statusCode}')),
+        );
       }
     } catch (e) {
-      print('Error deleting donor: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error deleting donor: $e')),
+      );
     }
   }
 
@@ -93,32 +117,30 @@ class DonorManagementPageState
     return Scaffold(
       backgroundColor: MyColors.backgroundColor,
       appBar: AppBar(
-          title: const Text(
-            "Donor Management",
-            style: TextStyle(color: Colors.white),
-          ),
-          backgroundColor: MyColors.primaryColor),
+        title: const Text(
+          "Donor Management",
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: MyColors.primaryColor,
+      ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : errorMessage.isNotEmpty
-              ? Center(child: Text(errorMessage, style: TextStyle(color: MyColors.primaryColor)))
-              : Column(
-                  children: [
-                    // Donor List
-                    Expanded(
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(16.0),
-                        itemCount: donors.length,
-                        itemBuilder: (context, index) {
-                          return _buildDonorCard(donors[index]);
-                        },
-                      ),
-                    ),
-                  ],
+              ? Center(
+                  child: Text(errorMessage, style: TextStyle(color: MyColors.primaryColor)),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.all(16.0),
+                  itemCount: donors.length,
+                  itemBuilder: (context, index) {
+                    return _buildDonorCard(donors[index]);
+                  },
                 ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/Signup');
+          Navigator.pushNamed(context, '/Signup').then((value) {
+            _loadConfigAndFetchDonors();
+          });
         },
         backgroundColor: MyColors.primaryColor,
         child: const Icon(
@@ -156,7 +178,9 @@ class DonorManagementPageState
                   MaterialPageRoute(
                     builder: (context) => UpdateDonorPage(donor: donor),
                   ),
-                );
+                ).then((value) {
+                  _loadConfigAndFetchDonors();
+                });
               },
             ),
             IconButton(
